@@ -1,0 +1,17 @@
+-- [R13] Monthly sales revenue for the last 12 months (date_trunc)
+-- median execution: 9.529 ms
+
+GroupAggregate  (cost=1509.47..1924.34 rows=15086 width=44) (actual time=6.652..9.417 rows=14 loops=1)
+  Group Key: ((date_trunc('month'::text, completed_at))::date)
+  Buffers: shared hit=126
+  ->  Sort  (cost=1509.47..1547.19 rows=15086 width=12) (actual time=6.585..7.346 rows=15086 loops=1)
+        Sort Key: ((date_trunc('month'::text, completed_at))::date)
+        Sort Method: quicksort  Memory: 974kB
+        Buffers: shared hit=126
+        ->  Seq Scan on transactions  (cost=0.00..462.44 rows=15086 width=12) (actual time=0.031..4.080 rows=15086 loops=1)
+              Filter: (completed_at >= (now() - '1 year'::interval))
+              Buffers: shared hit=123
+Planning:
+  Buffers: shared hit=163
+Planning Time: 0.537 ms
+Execution Time: 9.509 ms

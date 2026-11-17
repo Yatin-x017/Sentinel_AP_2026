@@ -1,0 +1,27 @@
+-- [R05] Top 10 sellers by number of completed sales (JOIN + GROUP BY)
+-- median execution: 23.558 ms
+
+Limit  (cost=1719.19..1719.22 rows=10 width=54) (actual time=22.228..22.234 rows=10 loops=1)
+  Buffers: shared hit=457
+  ->  Sort  (cost=1719.19..1756.91 rows=15086 width=54) (actual time=22.226..22.230 rows=10 loops=1)
+        Sort Key: (count(*)) DESC, (sum(t.final_price)) DESC
+        Sort Method: top-N heapsort  Memory: 26kB
+        Buffers: shared hit=457
+        ->  HashAggregate  (cost=1204.62..1393.19 rows=15086 width=54) (actual time=16.831..20.829 rows=10624 loops=1)
+              Group Key: u.user_id
+              Batches: 1  Memory Usage: 4881kB
+              Buffers: shared hit=451
+              ->  Hash Join  (cost=778.00..1091.47 rows=15086 width=22) (actual time=4.518..9.374 rows=15086 loops=1)
+                    Hash Cond: (t.seller_id = u.user_id)
+                    Buffers: shared hit=451
+                    ->  Seq Scan on transactions t  (cost=0.00..273.86 rows=15086 width=12) (actual time=0.006..1.149 rows=15086 loops=1)
+                          Buffers: shared hit=123
+                    ->  Hash  (cost=528.00..528.00 rows=20000 width=14) (actual time=4.403..4.404 rows=20000 loops=1)
+                          Buckets: 32768  Batches: 1  Memory Usage: 1164kB
+                          Buffers: shared hit=328
+                          ->  Seq Scan on users u  (cost=0.00..528.00 rows=20000 width=14) (actual time=0.003..1.841 rows=20000 loops=1)
+                                Buffers: shared hit=328
+Planning:
+  Buffers: shared hit=194
+Planning Time: 0.580 ms
+Execution Time: 22.872 ms

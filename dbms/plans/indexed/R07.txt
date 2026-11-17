@@ -1,0 +1,17 @@
+-- [R07] Users who have never posted a listing (NOT EXISTS)
+-- median execution: 6.020 ms
+
+Limit  (cost=0.58..141.80 rows=50 width=35) (actual time=0.021..5.997 rows=50 loops=1)
+  Buffers: shared hit=338
+  ->  Merge Anti Join  (cost=0.58..4279.58 rows=1515 width=35) (actual time=0.020..5.990 rows=50 loops=1)
+        Merge Cond: (u.user_id = l.seller_id)
+        Buffers: shared hit=338
+        ->  Index Scan using users_pkey on users u  (cost=0.29..859.29 rows=20000 width=35) (actual time=0.005..0.893 rows=7593 loops=1)
+              Buffers: shared hit=147
+        ->  Index Only Scan using idx_listings_seller on listings l  (cost=0.29..2120.29 rows=100000 width=4) (actual time=0.010..2.444 rows=37859 loops=1)
+              Heap Fetches: 145
+              Buffers: shared hit=191
+Planning:
+  Buffers: shared hit=273
+Planning Time: 0.701 ms
+Execution Time: 6.046 ms

@@ -1,0 +1,32 @@
+-- [R17] Three most expensive active listings in every leaf category (window)
+-- median execution: 128.689 ms
+
+Sort  (cost=18681.66..18830.14 rows=59393 width=46) (actual time=127.696..127.705 rows=96 loops=1)
+  Sort Key: ranked.category, ranked.rn
+  Sort Method: quicksort  Memory: 32kB
+  Buffers: shared hit=2409, temp read=411 written=412
+  ->  Subquery Scan on ranked  (cost=10360.10..12141.89 rows=59393 width=46) (actual time=113.631..127.610 rows=96 loops=1)
+        Buffers: shared hit=2403, temp read=411 written=412
+        ->  WindowAgg  (cost=10360.10..11547.96 rows=59393 width=50) (actual time=113.628..127.593 rows=96 loops=1)
+              Run Condition: (row_number() OVER (?) <= 3)
+              Buffers: shared hit=2403, temp read=411 written=412
+              ->  Sort  (cost=10360.10..10508.58 rows=59393 width=42) (actual time=113.615..124.003 rows=59279 loops=1)
+                    Sort Key: l.category_id, l.price DESC
+                    Sort Method: external merge  Disk: 3288kB
+                    Buffers: shared hit=2403, temp read=411 written=412
+                    ->  Hash Join  (cost=1.90..3820.33 rows=59393 width=42) (actual time=0.047..19.652 rows=59279 loops=1)
+                          Hash Cond: (l.category_id = c.category_id)
+                          Buffers: shared hit=2397
+                          ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=59393 width=33) (actual time=0.008..12.096 rows=59279 loops=1)
+                                Filter: ((status)::text = 'active'::text)
+                                Rows Removed by Filter: 40721
+                                Buffers: shared hit=2396
+                          ->  Hash  (cost=1.40..1.40 rows=40 width=13) (actual time=0.028..0.029 rows=40 loops=1)
+                                Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                                Buffers: shared hit=1
+                                ->  Seq Scan on categories c  (cost=0.00..1.40 rows=40 width=13) (actual time=0.002..0.005 rows=40 loops=1)
+                                      Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=177
+Planning Time: 0.591 ms
+Execution Time: 128.243 ms

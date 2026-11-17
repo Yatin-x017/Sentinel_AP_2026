@@ -1,0 +1,51 @@
+-- [R25] Average seller reply time to a buyer's first message, top 10 fastest (CTE)
+-- median execution: 230.120 ms
+
+Limit  (cost=28269.96..28269.99 rows=10 width=38) (actual time=227.117..227.147 rows=10 loops=1)
+  Buffers: shared hit=4673
+  ->  Sort  (cost=28269.96..28286.63 rows=6667 width=38) (actual time=227.115..227.142 rows=10 loops=1)
+        Sort Key: (avg(((min(m.sent_at) FILTER (WHERE (m.sender_id = l.seller_id))) - (min(m.sent_at) FILTER (WHERE (m.sender_id = c.buyer_id))))))
+        Sort Method: top-N heapsort  Memory: 25kB
+        Buffers: shared hit=4673
+        ->  HashAggregate  (cost=27825.89..28125.89 rows=6667 width=38) (actual time=221.708..226.004 rows=8750 loops=1)
+              Group Key: u.user_id
+              Filter: (count(*) >= 3)
+              Batches: 1  Memory Usage: 3345kB
+              Rows Removed by Filter: 8483
+              Buffers: shared hit=4668
+              ->  Hash Join  (cost=23061.81..27325.89 rows=50000 width=30) (actual time=173.131..197.642 rows=49996 loops=1)
+                    Hash Cond: (l.seller_id = u.user_id)
+                    Buffers: shared hit=4668
+                    ->  HashAggregate  (cost=22283.81..25916.62 rows=50000 width=24) (actual time=168.984..180.975 rows=49996 loops=1)
+                          Group Key: m.conversation_id, l.seller_id
+                          Filter: (min(m.sent_at) FILTER (WHERE (m.sender_id = l.seller_id)) > min(m.sent_at) FILTER (WHERE (m.sender_id = c.buyer_id)))
+                          Planned Partitions: 4  Batches: 1  Memory Usage: 5649kB
+                          Rows Removed by Filter: 4
+                          Buffers: shared hit=4340
+                          ->  Hash Join  (cost=6090.00..10002.56 rows=150000 width=24) (actual time=33.050..133.185 rows=150000 loops=1)
+                                Hash Cond: (c.listing_id = l.listing_id)
+                                Buffers: shared hit=4340
+                                ->  Hash Join  (cost=1444.00..4962.78 rows=150000 width=24) (actual time=8.288..66.610 rows=150000 loops=1)
+                                      Hash Cond: (m.conversation_id = c.conversation_id)
+                                      Buffers: shared hit=1944
+                                      ->  Seq Scan on messages m  (cost=0.00..3125.00 rows=150000 width=16) (actual time=0.005..9.344 rows=150000 loops=1)
+                                            Buffers: shared hit=1625
+                                      ->  Hash  (cost=819.00..819.00 rows=50000 width=12) (actual time=8.070..8.089 rows=50000 loops=1)
+                                            Buckets: 65536  Batches: 1  Memory Usage: 2661kB
+                                            Buffers: shared hit=319
+                                            ->  Seq Scan on conversations c  (cost=0.00..819.00 rows=50000 width=12) (actual time=0.004..3.177 rows=50000 loops=1)
+                                                  Buffers: shared hit=319
+                                ->  Hash  (cost=3396.00..3396.00 rows=100000 width=8) (actual time=24.366..24.367 rows=100000 loops=1)
+                                      Buckets: 131072  Batches: 1  Memory Usage: 4931kB
+                                      Buffers: shared hit=2396
+                                      ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=8) (actual time=0.009..10.223 rows=100000 loops=1)
+                                            Buffers: shared hit=2396
+                    ->  Hash  (cost=528.00..528.00 rows=20000 width=14) (actual time=4.007..4.008 rows=20000 loops=1)
+                          Buckets: 32768  Batches: 1  Memory Usage: 1164kB
+                          Buffers: shared hit=328
+                          ->  Seq Scan on users u  (cost=0.00..528.00 rows=20000 width=14) (actual time=0.007..1.542 rows=20000 loops=1)
+                                Buffers: shared hit=328
+Planning:
+  Buffers: shared hit=435
+Planning Time: 1.415 ms
+Execution Time: 228.642 ms

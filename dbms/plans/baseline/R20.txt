@@ -1,0 +1,29 @@
+-- [R20] Top 10 buyers by total spend
+-- median execution: 8.620 ms
+
+Limit  (cost=1279.93..1279.96 rows=10 width=54) (actual time=8.401..8.403 rows=2 loops=1)
+  Buffers: shared hit=132
+  ->  Sort  (cost=1279.93..1317.65 rows=15086 width=54) (actual time=8.399..8.401 rows=2 loops=1)
+        Sort Key: (sum(t.final_price)) DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=132
+        ->  HashAggregate  (cost=765.36..953.93 rows=15086 width=54) (actual time=8.268..8.361 rows=2 loops=1)
+              Group Key: u.user_id
+              Batches: 1  Memory Usage: 793kB
+              Buffers: shared hit=129
+              ->  Nested Loop  (cost=0.30..652.21 rows=15086 width=22) (actual time=0.105..5.663 rows=15086 loops=1)
+                    Buffers: shared hit=129
+                    ->  Seq Scan on transactions t  (cost=0.00..273.86 rows=15086 width=12) (actual time=0.010..1.102 rows=15086 loops=1)
+                          Buffers: shared hit=123
+                    ->  Memoize  (cost=0.30..0.42 rows=1 width=14) (actual time=0.000..0.000 rows=1 loops=15086)
+                          Cache Key: t.buyer_id
+                          Cache Mode: logical
+                          Hits: 15084  Misses: 2  Evictions: 0  Overflows: 0  Memory Usage: 1kB
+                          Buffers: shared hit=6
+                          ->  Index Scan using users_pkey on users u  (cost=0.29..0.41 rows=1 width=14) (actual time=0.016..0.016 rows=1 loops=2)
+                                Index Cond: (user_id = t.buyer_id)
+                                Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=172
+Planning Time: 0.615 ms
+Execution Time: 8.904 ms

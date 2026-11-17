@@ -1,0 +1,23 @@
+-- [W05] Housekeeping: delete stale favourites of listings that are no longer active
+-- median execution: 58.289 ms
+
+Delete on favorites f  (cost=4153.59..8158.28 rows=0 width=0) (actual time=57.773..57.778 rows=0 loops=1)
+  Buffers: shared hit=20594
+  ->  Hash Join  (cost=4153.59..8158.28 rows=17143 width=12) (actual time=16.650..52.620 rows=17279 loops=1)
+        Hash Cond: (f.listing_id = l.listing_id)
+        Buffers: shared hit=3315
+        ->  Seq Scan on favorites f  (cost=0.00..3893.88 rows=42217 width=10) (actual time=0.015..26.852 rows=42579 loops=1)
+              Filter: (created_at < (now() - '150 days'::interval))
+              Rows Removed by Filter: 127414
+              Buffers: shared hit=919
+        ->  Hash  (cost=3646.00..3646.00 rows=40607 width=10) (actual time=16.393..16.395 rows=40721 loops=1)
+              Buckets: 65536  Batches: 1  Memory Usage: 2262kB
+              Buffers: shared hit=2396
+              ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=40607 width=10) (actual time=0.007..11.088 rows=40721 loops=1)
+                    Filter: ((status)::text <> 'active'::text)
+                    Rows Removed by Filter: 59279
+                    Buffers: shared hit=2396
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.537 ms
+Execution Time: 57.903 ms

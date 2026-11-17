@@ -1,0 +1,48 @@
+-- [R12] Unread messages per conversation for user 100 (buyer or seller)
+-- median execution: 99.502 ms
+
+Sort  (cost=8984.76..8984.76 rows=3 width=12) (actual time=151.379..154.746 rows=0 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=4709
+  ->  Finalize GroupAggregate  (cost=8984.43..8984.73 rows=3 width=12) (actual time=151.362..154.728 rows=0 loops=1)
+        Group Key: m.conversation_id
+        Buffers: shared hit=4706
+        ->  Gather Merge  (cost=8984.43..8984.69 rows=2 width=12) (actual time=151.360..154.725 rows=0 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=4706
+              ->  Partial GroupAggregate  (cost=7984.42..7984.46 rows=2 width=12) (actual time=147.149..147.160 rows=0 loops=2)
+                    Group Key: m.conversation_id
+                    Buffers: shared hit=4706
+                    ->  Sort  (cost=7984.42..7984.43 rows=2 width=4) (actual time=147.146..147.157 rows=0 loops=2)
+                          Sort Key: m.conversation_id
+                          Sort Method: quicksort  Memory: 25kB
+                          Buffers: shared hit=4706
+                          Worker 0:  Sort Method: quicksort  Memory: 25kB
+                          ->  Parallel Hash Join  (cost=5163.54..7984.41 rows=2 width=4) (actual time=147.113..147.124 rows=0 loops=2)
+                                Hash Cond: (c.listing_id = l.listing_id)
+                                Join Filter: ((c.buyer_id = 100) OR (l.seller_id = 100))
+                                Rows Removed by Join Filter: 15029
+                                Buffers: shared hit=4670
+                                ->  Hash Join  (cost=1444.00..4218.41 rows=17702 width=12) (actual time=37.840..77.600 rows=15029 loops=2)
+                                      Hash Cond: (m.conversation_id = c.conversation_id)
+                                      Buffers: shared hit=2263
+                                      ->  Parallel Seq Scan on messages m  (cost=0.00..2727.94 rows=17702 width=4) (actual time=0.019..19.066 rows=15029 loops=2)
+                                            Filter: ((NOT is_read) AND (sender_id <> 100))
+                                            Rows Removed by Filter: 59971
+                                            Buffers: shared hit=1625
+                                      ->  Hash  (cost=819.00..819.00 rows=50000 width=12) (actual time=37.458..37.459 rows=50000 loops=2)
+                                            Buckets: 65536  Batches: 1  Memory Usage: 2661kB
+                                            Buffers: shared hit=638
+                                            ->  Seq Scan on conversations c  (cost=0.00..819.00 rows=50000 width=12) (actual time=0.035..16.358 rows=50000 loops=2)
+                                                  Buffers: shared hit=638
+                                ->  Parallel Hash  (cost=2984.24..2984.24 rows=58824 width=8) (actual time=45.075..45.076 rows=50000 loops=2)
+                                      Buckets: 131072  Batches: 1  Memory Usage: 4960kB
+                                      Buffers: shared hit=2396
+                                      ->  Parallel Seq Scan on listings l  (cost=0.00..2984.24 rows=58824 width=8) (actual time=0.010..14.366 rows=50000 loops=2)
+                                            Buffers: shared hit=2396
+Planning:
+  Buffers: shared hit=198
+Planning Time: 0.745 ms
+Execution Time: 155.509 ms

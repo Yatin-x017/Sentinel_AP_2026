@@ -1,0 +1,18 @@
+-- [W02] Price drop: cut all of seller 123's active listings by 10%
+-- median execution: 0.735 ms
+
+Update on listings  (cost=4.33..23.74 rows=0 width=0) (actual time=1.162..1.163 rows=0 loops=1)
+  Buffers: shared hit=120
+  ->  Bitmap Heap Scan on listings  (cost=4.33..23.74 rows=3 width=22) (actual time=0.054..0.141 rows=3 loops=1)
+        Recheck Cond: (seller_id = 123)
+        Filter: ((status)::text = 'active'::text)
+        Rows Removed by Filter: 3
+        Heap Blocks: exact=6
+        Buffers: shared hit=8
+        ->  Bitmap Index Scan on idx_listings_seller  (cost=0.00..4.33 rows=5 width=0) (actual time=0.019..0.019 rows=21 loops=1)
+              Index Cond: (seller_id = 123)
+              Buffers: shared hit=2
+Planning:
+  Buffers: shared hit=189
+Planning Time: 0.778 ms
+Execution Time: 1.319 ms

@@ -1,0 +1,23 @@
+-- [R10] One user's favourites with first image (JOIN + subquery)
+-- median execution: 0.346 ms
+
+Sort  (cost=174.62..174.64 rows=9 width=559) (actual time=0.303..0.305 rows=11 loops=1)
+  Sort Key: f.created_at DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=98
+  ->  Nested Loop  (cost=0.84..174.48 rows=9 width=559) (actual time=0.081..0.279 rows=11 loops=1)
+        Buffers: shared hit=95
+        ->  Index Scan using favorites_pkey on favorites f  (cost=0.42..22.58 rows=9 width=12) (actual time=0.014..0.016 rows=11 loops=1)
+              Index Cond: (user_id = 42)
+              Buffers: shared hit=4
+        ->  Index Scan using listings_pkey on listings l  (cost=0.42..8.44 rows=1 width=35) (actual time=0.012..0.012 rows=1 loops=11)
+              Index Cond: (listing_id = f.listing_id)
+              Buffers: shared hit=44
+        SubPlan 1
+          ->  Index Scan using listing_images_listing_id_position_key on listing_images i  (cost=0.42..8.44 rows=1 width=35) (actual time=0.011..0.011 rows=1 loops=11)
+                Index Cond: ((listing_id = l.listing_id) AND ("position" = 1))
+                Buffers: shared hit=47
+Planning:
+  Buffers: shared hit=260
+Planning Time: 0.622 ms
+Execution Time: 0.359 ms

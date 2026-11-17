@@ -1,0 +1,33 @@
+-- [R19] Listings with 3 or more open reports (moderation queue)
+-- median execution: 20.146 ms
+
+Sort  (cost=4443.78..4444.63 rows=342 width=39) (actual time=20.799..20.804 rows=0 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=5485
+  ->  HashAggregate  (cost=4416.54..4429.38 rows=342 width=39) (actual time=20.777..20.780 rows=0 loops=1)
+        Group Key: l.listing_id, u.full_name
+        Filter: (count(*) >= 3)
+        Batches: 1  Memory Usage: 193kB
+        Rows Removed by Filter: 1022
+        Buffers: shared hit=5482
+        ->  Nested Loop  (cost=48.81..4408.84 rows=1027 width=31) (actual time=0.238..20.067 rows=1027 loops=1)
+              Buffers: shared hit=5482
+              ->  Hash Join  (cost=48.52..4079.79 rows=1027 width=25) (actual time=0.225..17.570 rows=1027 loops=1)
+                    Hash Cond: (l.listing_id = r.listing_id)
+                    Buffers: shared hit=2401
+                    ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=25) (actual time=0.005..8.148 rows=100000 loops=1)
+                          Buffers: shared hit=2396
+                    ->  Hash  (cost=35.68..35.68 rows=1027 width=4) (actual time=0.201..0.202 rows=1027 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 53kB
+                          Buffers: shared hit=5
+                          ->  Index Only Scan using idx_reports_open_listing on reports r  (cost=0.28..35.68 rows=1027 width=4) (actual time=0.027..0.097 rows=1027 loops=1)
+                                Heap Fetches: 0
+                                Buffers: shared hit=5
+              ->  Index Scan using users_pkey on users u  (cost=0.29..0.32 rows=1 width=14) (actual time=0.002..0.002 rows=1 loops=1027)
+                    Index Cond: (user_id = l.seller_id)
+                    Buffers: shared hit=3081
+Planning:
+  Buffers: shared hit=340
+Planning Time: 1.040 ms
+Execution Time: 20.927 ms

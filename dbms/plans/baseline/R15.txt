@@ -1,0 +1,40 @@
+-- [R15] All sub-categories of Electronics with listing counts (recursive CTE)
+-- median execution: 24.981 ms
+
+Sort  (cost=8908.67..8909.17 rows=200 width=190) (actual time=26.266..26.271 rows=5 loops=1)
+  Sort Key: t.depth, t.name
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2405
+  CTE tree
+    ->  Recursive Union  (cost=0.00..27.46 rows=321 width=21) (actual time=0.008..0.115 rows=5 loops=1)
+          Buffers: shared hit=3
+          ->  Seq Scan on categories  (cost=0.00..1.50 rows=1 width=21) (actual time=0.006..0.011 rows=1 loops=1)
+                Filter: ((parent_id IS NULL) AND ((name)::text = 'Electronics'::text))
+                Rows Removed by Filter: 39
+                Buffers: shared hit=1
+          ->  Hash Join  (cost=0.33..2.28 rows=32 width=21) (actual time=0.028..0.033 rows=2 loops=2)
+                Hash Cond: (c.parent_id = t_1.category_id)
+                Buffers: shared hit=2
+                ->  Seq Scan on categories c  (cost=0.00..1.40 rows=40 width=17) (actual time=0.005..0.008 rows=40 loops=2)
+                      Buffers: shared hit=2
+                ->  Hash  (cost=0.20..0.20 rows=10 width=8) (actual time=0.007..0.007 rows=2 loops=2)
+                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                      ->  WorkTable Scan on tree t_1  (cost=0.00..0.20 rows=10 width=8) (actual time=0.003..0.004 rows=2 loops=2)
+  ->  HashAggregate  (cost=8871.56..8873.56 rows=200 width=190) (actual time=26.231..26.235 rows=5 loops=1)
+        Group Key: t.depth, t.name
+        Batches: 1  Memory Usage: 40kB
+        Buffers: shared hit=2399
+        ->  Hash Left Join  (cost=4646.00..7667.81 rows=160500 width=186) (actual time=21.699..24.726 rows=12969 loops=1)
+              Hash Cond: (t.category_id = l.category_id)
+              Buffers: shared hit=2399
+              ->  CTE Scan on tree t  (cost=0.00..6.42 rows=321 width=186) (actual time=0.011..0.119 rows=5 loops=1)
+                    Buffers: shared hit=3
+              ->  Hash  (cost=3396.00..3396.00 rows=100000 width=8) (actual time=21.278..21.279 rows=100000 loops=1)
+                    Buckets: 131072  Batches: 1  Memory Usage: 4931kB
+                    Buffers: shared hit=2396
+                    ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=8) (actual time=0.007..10.323 rows=100000 loops=1)
+                          Buffers: shared hit=2396
+Planning:
+  Buffers: shared hit=141
+Planning Time: 0.494 ms
+Execution Time: 26.507 ms

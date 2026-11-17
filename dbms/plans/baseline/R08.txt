@@ -1,0 +1,29 @@
+-- [R08] Best-rated sellers with at least 5 reviews (aggregate)
+-- median execution: 13.015 ms
+
+Limit  (cost=1330.69..1330.72 rows=10 width=54) (actual time=12.776..12.780 rows=4 loops=1)
+  Buffers: shared hit=433
+  ->  Sort  (cost=1330.69..1339.45 rows=3504 width=54) (actual time=12.775..12.777 rows=4 loops=1)
+        Sort Key: (round(avg(r.rating), 2)) DESC, (count(*)) DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=433
+        ->  HashAggregate  (cost=1088.54..1254.97 rows=3504 width=54) (actual time=11.332..12.747 rows=4 loops=1)
+              Group Key: u.user_id
+              Filter: (count(*) >= 5)
+              Batches: 1  Memory Usage: 1681kB
+              Rows Removed by Filter: 8186
+              Buffers: shared hit=427
+              ->  Hash Join  (cost=778.00..1009.71 rows=10511 width=16) (actual time=4.534..7.713 rows=10511 loops=1)
+                    Hash Cond: (r.reviewee_id = u.user_id)
+                    Buffers: shared hit=427
+                    ->  Seq Scan on reviews r  (cost=0.00..204.11 rows=10511 width=6) (actual time=0.007..0.709 rows=10511 loops=1)
+                          Buffers: shared hit=99
+                    ->  Hash  (cost=528.00..528.00 rows=20000 width=14) (actual time=4.418..4.419 rows=20000 loops=1)
+                          Buckets: 32768  Batches: 1  Memory Usage: 1164kB
+                          Buffers: shared hit=328
+                          ->  Seq Scan on users u  (cost=0.00..528.00 rows=20000 width=14) (actual time=0.005..1.814 rows=20000 loops=1)
+                                Buffers: shared hit=328
+Planning:
+  Buffers: shared hit=197
+Planning Time: 0.594 ms
+Execution Time: 13.075 ms

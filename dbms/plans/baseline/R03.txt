@@ -1,0 +1,27 @@
+-- [R03] Negotiable smartphones priced 10,000-40,000 (filter + sort)
+-- median execution: 18.896 ms
+
+Limit  (cost=4197.96..4198.08 rows=50 width=35) (actual time=18.884..18.892 rows=50 loops=1)
+  Buffers: shared hit=2400
+  ->  Sort  (cost=4197.96..4198.80 rows=338 width=35) (actual time=18.882..18.886 rows=50 loops=1)
+        Sort Key: l.price
+        Sort Method: top-N heapsort  Memory: 31kB
+        Buffers: shared hit=2400
+        ->  Hash Join  (cost=1.51..4186.73 rows=338 width=35) (actual time=0.092..18.660 rows=231 loops=1)
+              Hash Cond: (l.category_id = c.category_id)
+              Buffers: shared hit=2397
+              ->  Seq Scan on listings l  (cost=0.00..4146.00 rows=13508 width=39) (actual time=0.008..17.835 rows=13468 loops=1)
+                    Filter: (is_negotiable AND (price >= '10000'::numeric) AND (price <= '40000'::numeric) AND ((status)::text = 'active'::text))
+                    Rows Removed by Filter: 86532
+                    Buffers: shared hit=2396
+              ->  Hash  (cost=1.50..1.50 rows=1 width=4) (actual time=0.010..0.011 rows=1 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=1
+                    ->  Seq Scan on categories c  (cost=0.00..1.50 rows=1 width=4) (actual time=0.003..0.005 rows=1 loops=1)
+                          Filter: ((name)::text = 'Smartphones'::text)
+                          Rows Removed by Filter: 39
+                          Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=241
+Planning Time: 0.570 ms
+Execution Time: 18.930 ms

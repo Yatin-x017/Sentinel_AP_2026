@@ -1,0 +1,20 @@
+-- [R18] Daily new listings and 7-day moving average, last 30 days (window)
+-- median execution: 2.729 ms
+
+WindowAgg  (cost=833.10..1143.75 rows=8284 width=44) (actual time=1.724..2.564 rows=31 loops=1)
+  Buffers: shared hit=65
+  ->  GroupAggregate  (cost=833.10..998.78 rows=8284 width=12) (actual time=1.683..2.463 rows=31 loops=1)
+        Group Key: ((listings.created_at)::date)
+        Buffers: shared hit=65
+        ->  Sort  (cost=833.10..853.81 rows=8284 width=4) (actual time=1.653..1.968 rows=8347 loops=1)
+              Sort Key: ((listings.created_at)::date)
+              Sort Method: quicksort  Memory: 385kB
+              Buffers: shared hit=65
+              ->  Index Only Scan using idx_listings_created_at on listings  (cost=0.30..293.98 rows=8284 width=4) (actual time=0.048..1.158 rows=8347 loops=1)
+                    Index Cond: (created_at >= (now() - '30 days'::interval))
+                    Heap Fetches: 34
+                    Buffers: shared hit=62
+Planning:
+  Buffers: shared hit=210
+Planning Time: 0.891 ms
+Execution Time: 2.700 ms

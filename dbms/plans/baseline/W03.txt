@@ -1,0 +1,30 @@
+-- [W03] Mark a listing as sold and record the transaction (atomic CTE)
+-- median execution: 1.003 ms
+
+Insert on transactions  (cost=9.04..9.08 rows=0 width=0) (actual time=0.216..0.217 rows=0 loops=1)
+  Buffers: shared hit=59
+  CTE pick
+    ->  Limit  (cost=0.42..0.58 rows=1 width=16) (actual time=0.058..0.058 rows=1 loops=1)
+          Buffers: shared hit=5
+          ->  Index Scan using listings_pkey on listings  (cost=0.42..9496.20 rows=59390 width=16) (actual time=0.057..0.057 rows=1 loops=1)
+                Filter: ((seller_id <> 77) AND ((status)::text = 'active'::text))
+                Rows Removed by Filter: 1
+                Buffers: shared hit=5
+  CTE upd
+    ->  Update on listings l  (cost=0.42..8.46 rows=1 width=80) (actual time=0.171..0.172 rows=1 loops=1)
+          Buffers: shared hit=35
+          ->  Nested Loop  (cost=0.42..8.46 rows=1 width=80) (actual time=0.022..0.023 rows=1 loops=1)
+                Buffers: shared hit=4
+                ->  CTE Scan on pick  (cost=0.00..0.02 rows=1 width=32) (actual time=0.014..0.014 rows=1 loops=1)
+                ->  Index Scan using listings_pkey on listings l  (cost=0.42..8.44 rows=1 width=10) (actual time=0.006..0.006 rows=1 loops=1)
+                      Index Cond: (listing_id = pick.listing_id)
+                      Buffers: shared hit=4
+  ->  CTE Scan on pick p  (cost=0.00..0.04 rows=1 width=40) (actual time=0.109..0.110 rows=1 loops=1)
+        Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=97
+Planning Time: 0.590 ms
+Trigger for constraint transactions_listing_id_fkey on transactions: time=0.156 calls=1
+Trigger for constraint transactions_buyer_id_fkey on transactions: time=0.292 calls=1
+Trigger for constraint transactions_seller_id_fkey on transactions: time=0.113 calls=1
+Execution Time: 1.099 ms

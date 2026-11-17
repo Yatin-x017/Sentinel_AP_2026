@@ -1,0 +1,23 @@
+-- [R07] Users who have never posted a listing (NOT EXISTS)
+-- median execution: 33.574 ms
+
+Limit  (cost=5514.20..5514.33 rows=50 width=35) (actual time=32.471..32.482 rows=50 loops=1)
+  Buffers: shared hit=2727
+  ->  Sort  (cost=5514.20..5518.09 rows=1553 width=35) (actual time=32.469..32.476 rows=50 loops=1)
+        Sort Key: u.user_id
+        Sort Method: top-N heapsort  Memory: 31kB
+        Buffers: shared hit=2727
+        ->  Hash Right Anti Join  (cost=778.00..5462.61 rows=1553 width=35) (actual time=32.042..32.410 rows=143 loops=1)
+              Hash Cond: (l.seller_id = u.user_id)
+              Buffers: shared hit=2724
+              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=4) (actual time=0.007..8.080 rows=100000 loops=1)
+                    Buffers: shared hit=2396
+              ->  Hash  (cost=528.00..528.00 rows=20000 width=35) (actual time=5.284..5.286 rows=20000 loops=1)
+                    Buckets: 32768  Batches: 1  Memory Usage: 1582kB
+                    Buffers: shared hit=328
+                    ->  Seq Scan on users u  (cost=0.00..528.00 rows=20000 width=35) (actual time=0.004..1.893 rows=20000 loops=1)
+                          Buffers: shared hit=328
+Planning:
+  Buffers: shared hit=154
+Planning Time: 0.527 ms
+Execution Time: 32.582 ms

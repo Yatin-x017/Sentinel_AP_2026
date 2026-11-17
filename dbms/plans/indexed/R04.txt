@@ -1,0 +1,13 @@
+-- [R04] Keyword search on title (pattern match)
+-- median execution: 2.750 ms
+
+Limit  (cost=0.29..212.47 rows=30 width=41) (actual time=0.152..2.733 rows=30 loops=1)
+  Buffers: shared hit=1495
+  ->  Index Scan Backward using idx_listings_created_at on listings  (cost=0.29..12688.29 rows=1794 width=41) (actual time=0.151..2.729 rows=30 loops=1)
+        Filter: (((title)::text ~~* '%iphone%'::text) AND ((status)::text = 'active'::text))
+        Rows Removed by Filter: 1456
+        Buffers: shared hit=1495
+Planning:
+  Buffers: shared hit=227
+Planning Time: 0.986 ms
+Execution Time: 2.758 ms

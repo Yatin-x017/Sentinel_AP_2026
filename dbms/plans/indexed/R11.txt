@@ -1,0 +1,35 @@
+-- [R11] Seller inbox: chats on my listings with the latest message (LATERAL)
+-- median execution: 0.249 ms
+
+Sort  (cost=77.22..77.23 rows=2 width=62) (actual time=0.156..0.157 rows=4 loops=1)
+  Sort Key: messages.sent_at DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=45
+  ->  Nested Loop  (cost=5.33..77.21 rows=2 width=62) (actual time=0.073..0.136 rows=4 loops=1)
+        Buffers: shared hit=42
+        ->  Nested Loop  (cost=4.91..65.97 rows=2 width=31) (actual time=0.053..0.100 rows=4 loops=1)
+              Buffers: shared hit=26
+              ->  Nested Loop  (cost=4.62..65.30 rows=2 width=25) (actual time=0.037..0.063 rows=4 loops=1)
+                    Buffers: shared hit=14
+                    ->  Bitmap Heap Scan on listings l  (cost=4.33..23.71 rows=5 width=21) (actual time=0.023..0.032 rows=3 loops=1)
+                          Recheck Cond: (seller_id = 7)
+                          Heap Blocks: exact=3
+                          Buffers: shared hit=5
+                          ->  Bitmap Index Scan on idx_listings_seller  (cost=0.00..4.33 rows=5 width=0) (actual time=0.013..0.013 rows=3 loops=1)
+                                Index Cond: (seller_id = 7)
+                                Buffers: shared hit=2
+                    ->  Index Scan using conversations_listing_id_buyer_id_key on conversations c  (cost=0.29..8.31 rows=1 width=12) (actual time=0.008..0.009 rows=1 loops=3)
+                          Index Cond: (listing_id = l.listing_id)
+                          Buffers: shared hit=9
+              ->  Index Scan using users_pkey on users b  (cost=0.29..0.34 rows=1 width=14) (actual time=0.009..0.009 rows=1 loops=4)
+                    Index Cond: (user_id = c.buyer_id)
+                    Buffers: shared hit=12
+        ->  Limit  (cost=0.42..5.61 rows=1 width=31) (actual time=0.008..0.008 rows=1 loops=4)
+              Buffers: shared hit=16
+              ->  Index Scan using idx_messages_conv_sent on messages  (cost=0.42..16.00 rows=3 width=31) (actual time=0.008..0.008 rows=1 loops=4)
+                    Index Cond: (conversation_id = c.conversation_id)
+                    Buffers: shared hit=16
+Planning:
+  Buffers: shared hit=482
+Planning Time: 1.151 ms
+Execution Time: 0.232 ms

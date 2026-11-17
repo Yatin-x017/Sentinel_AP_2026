@@ -1,0 +1,37 @@
+-- [R01] Newest active listings in Gurugram with seller name (JOIN x3)
+-- median execution: 31.384 ms
+
+Limit  (cost=4360.46..4369.36 rows=20 width=47) (actual time=28.105..31.266 rows=20 loops=1)
+  Buffers: shared hit=2541
+  ->  Nested Loop  (cost=4360.46..5914.65 rows=3494 width=47) (actual time=28.102..31.259 rows=20 loops=1)
+        Buffers: shared hit=2541
+        ->  Gather Merge  (cost=4360.18..4758.39 rows=3494 width=41) (actual time=28.053..30.997 rows=20 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2481
+              ->  Sort  (cost=3360.17..3365.30 rows=2055 width=41) (actual time=23.811..23.886 rows=454 loops=2)
+                    Sort Key: l.created_at DESC
+                    Sort Method: quicksort  Memory: 251kB
+                    Buffers: shared hit=2481
+                    Worker 0:  Sort Method: quicksort  Memory: 160kB
+                    ->  Hash Join  (cost=1.22..3247.09 rows=2055 width=41) (actual time=0.103..22.982 rows=1865 loops=2)
+                          Hash Cond: (l.city_id = c.city_id)
+                          Buffers: shared hit=2445
+                          ->  Parallel Seq Scan on listings l  (cost=0.00..3131.29 rows=34937 width=45) (actual time=0.011..18.226 rows=29640 loops=2)
+                                Filter: ((status)::text = 'active'::text)
+                                Rows Removed by Filter: 20360
+                                Buffers: shared hit=2396
+                          ->  Hash  (cost=1.21..1.21 rows=1 width=4) (actual time=0.018..0.019 rows=1 loops=2)
+                                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                Buffers: shared hit=2
+                                ->  Seq Scan on cities c  (cost=0.00..1.21 rows=1 width=4) (actual time=0.008..0.010 rows=1 loops=2)
+                                      Filter: ((name)::text = 'Gurugram'::text)
+                                      Rows Removed by Filter: 16
+                                      Buffers: shared hit=2
+        ->  Index Scan using users_pkey on users u  (cost=0.29..0.33 rows=1 width=14) (actual time=0.012..0.012 rows=1 loops=20)
+              Index Cond: (user_id = l.seller_id)
+              Buffers: shared hit=60
+Planning:
+  Buffers: shared hit=297
+Planning Time: 1.138 ms
+Execution Time: 31.384 ms

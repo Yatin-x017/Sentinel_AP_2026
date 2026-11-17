@@ -1,0 +1,34 @@
+-- [R19] Listings with 3 or more open reports (moderation queue)
+-- median execution: 20.391 ms
+
+Sort  (cost=4492.09..4492.95 rows=342 width=39) (actual time=19.973..19.978 rows=0 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=5514
+  ->  HashAggregate  (cost=4464.86..4477.70 rows=342 width=39) (actual time=19.954..19.958 rows=0 loops=1)
+        Group Key: l.listing_id, u.full_name
+        Filter: (count(*) >= 3)
+        Batches: 1  Memory Usage: 193kB
+        Rows Removed by Filter: 1022
+        Buffers: shared hit=5511
+        ->  Nested Loop  (cost=97.12..4457.16 rows=1027 width=31) (actual time=0.409..19.395 rows=1027 loops=1)
+              Buffers: shared hit=5511
+              ->  Hash Join  (cost=96.84..4128.11 rows=1027 width=25) (actual time=0.395..17.023 rows=1027 loops=1)
+                    Hash Cond: (l.listing_id = r.listing_id)
+                    Buffers: shared hit=2430
+                    ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=25) (actual time=0.005..7.593 rows=100000 loops=1)
+                          Buffers: shared hit=2396
+                    ->  Hash  (cost=84.00..84.00 rows=1027 width=4) (actual time=0.373..0.375 rows=1027 loops=1)
+                          Buckets: 2048  Batches: 1  Memory Usage: 53kB
+                          Buffers: shared hit=34
+                          ->  Seq Scan on reports r  (cost=0.00..84.00 rows=1027 width=4) (actual time=0.007..0.269 rows=1027 loops=1)
+                                Filter: ((status)::text = 'open'::text)
+                                Rows Removed by Filter: 2973
+                                Buffers: shared hit=34
+              ->  Index Scan using users_pkey on users u  (cost=0.29..0.32 rows=1 width=14) (actual time=0.002..0.002 rows=1 loops=1027)
+                    Index Cond: (user_id = l.seller_id)
+                    Buffers: shared hit=3081
+Planning:
+  Buffers: shared hit=213
+Planning Time: 0.744 ms
+Execution Time: 20.128 ms
