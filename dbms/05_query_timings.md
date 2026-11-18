@@ -93,6 +93,11 @@ Slight regressions on W01 and W03 (about 0.5 ms) are the price of maintaining 18
 
 Every extra index slows writes and uses disk. The set in `07_indexes.sql` was chosen only from columns that appeared in a Seq Scan on the baseline plans of queries above; indexes that did not help any query (for example the trigram index `idx_listings_title_trgm` is not picked for R04 because the pattern matches about 6% of rows and the `created_at` order is cheaper with LIMIT) are candidates to drop in production.
 
-## 5. Conclusion
+## 5. Conclusion & CP5 Next Steps
 
-Indexing foreign-key and filter columns cut the filter-heavy queries by 2x to 133x, while whole-table analytics queries stay in the 10-230 ms range at this scale and would need summary tables or materialized views to scale further (see the scalability report in the DE repo).
+Indexing foreign-key and filter columns cut the filter-heavy queries by 2x to 133x, while whole-table analytics queries stay in the 10-230 ms range at this scale and require pre-aggregated summary tables or materialized views to scale further.
+
+To address this bottleneck, **CP5 (`08_triggers_and_views.sql`)** introduces:
+1. **Materialized Views (`mv_top_favourited_listings`, `mv_seller_performance`, `mv_category_summary`)**: Resolves the slow full-table scans for R09 (148 ms) and R25 (230 ms), reducing median execution to <1 ms with support for concurrent background refreshes (`REFRESH MATERIALIZED VIEW CONCURRENTLY`).
+2. **Business Rule Triggers**: Automates listing status synchronization on sales, verifies review participants, and prevents invalid self-favourites and self-conversations.
+3. **Transactional Stored Procedures**: ACID-compliant sales completion with row-level locks (`sp_complete_sale`) and bulk message-read procedures (`sp_mark_conversation_read`).

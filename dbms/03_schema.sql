@@ -1,8 +1,8 @@
 -- =====================================================================
 -- CP2: Relational schema  |  DBMS project: 18. OLX Buy & Sell
 -- Team T0058 (Sentinel)   |  Target: PostgreSQL 14+
--- puneet goyal commit
--- All tables are in 3NF (see 01_normalization.md)
+-- Contributors: Dhaval Sethi, Puneet Goyal, Yatin
+-- All tables are in 3NF / BCNF (see 01_normalization.md)
 -- =====================================================================
 
 DROP TABLE IF EXISTS reports, reviews, transactions, offers, messages,
