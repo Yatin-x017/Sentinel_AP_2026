@@ -1,20 +1,20 @@
 -- [W01] Post a new listing together with its cover image (data-modifying CTE)
--- median execution: 1.200 ms
+-- runs (ms): 1.203 / 1.123 / 1.111  average: 1.146 ms
 
-Insert on listing_images  (cost=0.02..0.04 rows=0 width=0) (actual time=0.339..0.339 rows=0 loops=1)
-  Buffers: shared hit=121
+Insert on listing_images  (cost=0.02..0.04 rows=0 width=0) (actual time=0.298..0.298 rows=0 loops=1)
+  Buffers: shared hit=116
   CTE new_listing
-    ->  Insert on listings  (cost=0.00..0.02 rows=1 width=475) (actual time=0.239..0.240 rows=1 loops=1)
-          Buffers: shared hit=70
-          ->  Result  (cost=0.00..0.02 rows=1 width=475) (actual time=0.052..0.052 rows=1 loops=1)
+    ->  Insert on listings  (cost=0.00..0.02 rows=1 width=475) (actual time=0.204..0.205 rows=1 loops=1)
+          Buffers: shared hit=67
+          ->  Result  (cost=0.00..0.02 rows=1 width=475) (actual time=0.039..0.039 rows=1 loops=1)
                 Buffers: shared hit=13
-  ->  CTE Scan on new_listing  (cost=0.00..0.03 rows=1 width=526) (actual time=0.259..0.260 rows=1 loops=1)
-        Buffers: shared hit=82
+  ->  CTE Scan on new_listing  (cost=0.00..0.03 rows=1 width=526) (actual time=0.226..0.227 rows=1 loops=1)
+        Buffers: shared hit=79
 Planning:
   Buffers: shared hit=15
-Planning Time: 0.125 ms
-Trigger for constraint listings_seller_id_fkey on listings: time=0.518 calls=1
+Planning Time: 0.119 ms
+Trigger for constraint listings_seller_id_fkey on listings: time=0.474 calls=1
 Trigger for constraint listings_category_id_fkey on listings: time=0.137 calls=1
-Trigger for constraint listings_city_id_fkey on listings: time=0.111 calls=1
-Trigger for constraint listing_images_listing_id_fkey on listing_images: time=0.050 calls=1
-Execution Time: 1.200 ms
+Trigger for constraint listings_city_id_fkey on listings: time=0.109 calls=1
+Trigger for constraint listing_images_listing_id_fkey on listing_images: time=0.051 calls=1
+Execution Time: 1.111 ms

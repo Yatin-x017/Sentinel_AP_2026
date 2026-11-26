@@ -1,31 +1,31 @@
-id,title,planning_ms,median_exec_ms,min_ms,max_ms
-R01,Newest active listings in Gurugram with seller name (JOIN x3),1.138,31.384,24.089,34.984
-R02,Active listing count per top-level category (self-join + GROUP BY),0.578,32.729,32.342,33.183
-R03,"Negotiable smartphones priced 10,000-40,000 (filter + sort)",0.570,18.896,18.353,18.989
-R04,Keyword search on title (pattern match),0.410,40.980,40.880,41.249
-R05,Top 10 sellers by number of completed sales (JOIN + GROUP BY),0.580,23.558,22.815,24.873
-R06,Average price per category with more than 500 listings (HAVING),0.554,42.195,41.101,43.188
-R07,Users who have never posted a listing (NOT EXISTS),0.527,33.574,30.838,61.333
-R08,Best-rated sellers with at least 5 reviews (aggregate),0.594,13.015,12.829,13.997
-R09,Ten most favourited active listings,0.741,145.474,141.065,182.635
-R10,One user's favourites with first image (JOIN + subquery),0.622,0.346,0.315,0.365
-R11,Seller inbox: chats on my listings with the latest message (LATERAL),0.868,33.135,32.569,34.602
-R12,Unread messages per conversation for user 100 (buyer or seller),0.745,99.502,92.435,155.509
-R13,Monthly sales revenue for the last 12 months (date_trunc),0.481,9.800,9.633,12.080
-R14,Active listings and average price by state and city (ROLLUP),0.623,50.019,48.986,50.632
-R15,All sub-categories of Electronics with listing counts (recursive CTE),0.494,24.981,24.653,26.507
-R16,Accepted offers: biggest discounts versus asking price,0.552,42.591,37.111,45.909
-R17,Three most expensive active listings in every leaf category (window),0.591,128.689,106.640,144.429
-R18,"Daily new listings and 7-day moving average, last 30 days (window)",0.366,18.902,18.807,19.475
-R19,Listings with 3 or more open reports (moderation queue),0.744,20.391,20.128,20.729
-R20,Top 10 buyers by total spend,0.615,8.620,8.426,9.225
-R21,Active listings that nobody has favourited or messaged (double NOT EXISTS),1.004,95.240,94.351,127.530
-R22,Sell-through rate per parent category (conditional aggregation),0.531,46.230,44.706,46.411
-R23,Sellers with 10+ sales and rating above the platform average (subquery),0.890,26.438,21.057,27.844
-R24,Active listings priced 50% above their category average (CTE + join),0.443,57.031,56.829,58.198
-R25,"Average seller reply time to a buyer's first message, top 10 fastest (CTE)",0.793,261.635,253.219,315.511
-W01,Post a new listing together with its cover image (data-modifying CTE),0.125,1.200,1.187,1.306
-W02,Price drop: cut all of seller 123's active listings by 10%,0.323,9.101,8.454,9.287
-W03,Mark a listing as sold and record the transaction (atomic CTE),0.590,1.003,0.839,1.213
-W04,Buyer leaves a 5-star review on a sale that has no review yet,0.633,0.759,0.705,1.231
-W05,Housekeeping: delete stale favourites of listings that are no longer active,0.537,58.289,57.903,59.239
+id,type,title,planning_ms,run1_ms,run2_ms,run3_ms,average_ms
+R01,READ,Newest active listings in Gurugram with seller name (JOIN x3),0.757,27.073,26.874,27.047,26.998
+R02,READ,Active listing count per top-level category (self-join + GROUP BY),0.613,45.407,41.338,40.795,42.513
+R03,READ,"Negotiable smartphones priced 10,000-40,000 (filter + sort)",0.599,23.253,23.509,23.041,23.268
+R04,READ,Keyword search on title (pattern match),0.553,60.866,53.253,52.253,55.457
+R05,READ,Top 10 sellers by number of completed sales (JOIN + GROUP BY),0.673,26.084,27.074,35.282,29.480
+R06,READ,Average price per category with more than 500 listings (HAVING),0.544,52.033,52.269,52.635,52.312
+R07,READ,Users who have never posted a listing (anti-join: LEFT JOIN ... IS NULL),0.486,43.805,34.954,32.340,37.033
+R08,READ,Best-rated sellers with at least 5 reviews (aggregate),0.617,14.643,14.461,15.107,14.737
+R09,READ,Ten most favourited active listings,0.549,140.977,163.885,149.483,151.448
+R10,READ,One user's favourites with first image (JOIN + LEFT JOIN),0.886,0.373,0.430,0.347,0.383
+R11,READ,Seller inbox: chats on my listings with the latest message (LATERAL),1.379,44.484,47.311,45.653,45.816
+R12,READ,Unread messages per conversation for user 100 (buyer or seller),0.881,94.102,93.166,90.958,92.742
+R13,READ,Monthly sales revenue for the last 12 months (date_trunc),0.364,10.861,11.558,11.869,11.429
+R14,READ,Active listings and average price by state and city (ROLLUP),0.658,62.544,63.292,60.990,62.275
+R15,READ,All sub-categories of Electronics with listing counts (recursive CTE),0.672,29.824,29.281,29.846,29.650
+R16,READ,Accepted offers: biggest discounts versus asking price,0.550,47.962,46.897,84.649,59.836
+R17,READ,Three most expensive active listings in every leaf category (window),0.542,143.509,151.736,150.640,148.628
+R18,READ,"Daily new listings and 7-day moving average, last 30 days (window)",0.455,24.879,24.109,27.918,25.635
+R19,READ,Listings with 3 or more open reports (moderation queue),0.726,23.452,23.321,23.150,23.308
+R20,READ,Top 10 buyers by total spend,0.576,9.735,9.801,9.765,9.767
+R21,READ,Active listings that nobody has favourited or messaged (double anti-join),0.767,117.512,138.774,115.233,123.840
+R22,READ,Sell-through rate per parent category (conditional aggregation),0.622,65.641,66.924,67.388,66.651
+R23,READ,Sellers with 10+ sales and rating above the platform average (JOIN on a one-row aggregate),0.853,38.134,37.556,38.221,37.970
+R24,READ,Active listings priced 50% above their category average (CTE + join),0.448,69.785,93.927,69.102,77.605
+R25,READ,"Average seller reply time to a buyer's first message, top 10 fastest (CTE)",0.962,304.433,233.939,231.446,256.606
+W01,WRITE,Post a new listing together with its cover image (data-modifying CTE),0.119,1.203,1.123,1.111,1.146
+W02,WRITE,Price drop: cut all of seller 123's active listings by 10%,0.266,11.427,11.445,11.460,11.444
+W03,WRITE,Mark a listing as sold and record the transaction (atomic CTE),0.415,0.794,0.816,0.795,0.802
+W04,WRITE,Buyer leaves a 5-star review on a sale that has no review yet,0.637,0.602,0.601,0.589,0.597
+W05,WRITE,Housekeeping: delete stale favourites of listings that are no longer active,0.594,73.602,69.772,75.119,72.831

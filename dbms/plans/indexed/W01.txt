@@ -1,20 +1,20 @@
 -- [W01] Post a new listing together with its cover image (data-modifying CTE)
--- median execution: 1.776 ms
+-- runs (ms): 3.540 / 1.817 / 1.545  average: 2.301 ms
 
-Insert on listing_images  (cost=0.02..0.04 rows=0 width=0) (actual time=0.873..0.874 rows=0 loops=1)
-  Buffers: shared hit=249
+Insert on listing_images  (cost=0.02..0.04 rows=0 width=0) (actual time=0.776..0.777 rows=0 loops=1)
+  Buffers: shared hit=248
   CTE new_listing
-    ->  Insert on listings  (cost=0.00..0.02 rows=1 width=475) (actual time=0.754..0.755 rows=1 loops=1)
-          Buffers: shared hit=198
-          ->  Result  (cost=0.00..0.02 rows=1 width=475) (actual time=0.045..0.045 rows=1 loops=1)
+    ->  Insert on listings  (cost=0.00..0.02 rows=1 width=475) (actual time=0.688..0.689 rows=1 loops=1)
+          Buffers: shared hit=199
+          ->  Result  (cost=0.00..0.02 rows=1 width=475) (actual time=0.033..0.034 rows=1 loops=1)
                 Buffers: shared hit=13
-  ->  CTE Scan on new_listing  (cost=0.00..0.03 rows=1 width=526) (actual time=0.778..0.779 rows=1 loops=1)
-        Buffers: shared hit=210
+  ->  CTE Scan on new_listing  (cost=0.00..0.03 rows=1 width=526) (actual time=0.706..0.707 rows=1 loops=1)
+        Buffers: shared hit=211
 Planning:
   Buffers: shared hit=15
-Planning Time: 0.123 ms
-Trigger for constraint listings_seller_id_fkey on listings: time=0.521 calls=1
-Trigger for constraint listings_category_id_fkey on listings: time=0.158 calls=1
-Trigger for constraint listings_city_id_fkey on listings: time=0.079 calls=1
-Trigger for constraint listing_images_listing_id_fkey on listing_images: time=0.071 calls=1
-Execution Time: 1.787 ms
+Planning Time: 0.102 ms
+Trigger for constraint listings_seller_id_fkey on listings: time=0.432 calls=1
+Trigger for constraint listings_category_id_fkey on listings: time=0.135 calls=1
+Trigger for constraint listings_city_id_fkey on listings: time=0.082 calls=1
+Trigger for constraint listing_images_listing_id_fkey on listing_images: time=0.084 calls=1
+Execution Time: 1.545 ms

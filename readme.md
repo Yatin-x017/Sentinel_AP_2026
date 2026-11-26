@@ -42,27 +42,28 @@ A test suite of 30 production queries covering advanced SQL paradigms:
   * Window functions (`ROW_NUMBER() OVER PARTITION` in R17, 7-day moving averages in R18).
   * Common Table Expressions (Recursive CTE for category hierarchies in R15).
   * Multi-dimensional aggregations (`GROUP BY ROLLUP` in R14, conditional `FILTER` in R22).
-  * Subquery anti-joins with single and double `NOT EXISTS` (R07, R21).
+  * JOIN-based anti-joins (`LEFT JOIN ... IS NULL`) for never-posted users and un-engaged listings (R07, R21, W04).
+  * Every query in `04_queries.sql` is tagged `-- READ` or `-- WRITE`.
 * **5 Write Queries (W01–W05)**:
   * Data-modifying CTEs for multi-table atomic inserts (W01).
   * Atomic sale checkout updates and transaction creation (W03).
   * Batch housekeeping using `DELETE ... USING` (W05).
 
 ### 4. [CP4 - Index Tuning & Performance Profiling](dbms/05_query_timings.md)
-* Profiling harness built with Python ([`dbms/run_timings.py`](dbms/run_timings.py)) running `EXPLAIN (ANALYZE, BUFFERS)` over 1 warm-up and 5 timed runs per query.
+* Profiling harness built with Python ([`dbms/run_timings.py`](dbms/run_timings.py)) running `EXPLAIN (ANALYZE, BUFFERS)` over 1 warm-up and 3 timed runs (Run 1, Run 2, Run 3) per query, reporting the average.
 * Seeded with **100,000 listings**, **20,000 users**, **300,000 images**, and **150,000 messages** ([`dbms/06_seed_data.sql`](dbms/06_seed_data.sql)).
 * Targeted indexing ([`dbms/07_indexes.sql`](dbms/07_indexes.sql)) including composite indexes, partial indexes, and trigram full-text search (`pg_trgm`).
 * **Key Speedup Highlights**:
-  * **R11 (Seller Inbox LATERAL)**: **133.1x faster** (33.1 ms $\rightarrow$ 0.25 ms)
-  * **R21 (Un-engaged Listings Anti-join)**: **49.4x faster** (95.2 ms $\rightarrow$ 1.93 ms)
-  * **R01 (Geographic Listing Feed)**: **16.7x faster** (31.4 ms $\rightarrow$ 1.88 ms)
-  * **R04 (Keyword Search)**: **14.9x faster** (41.0 ms $\rightarrow$ 2.75 ms)
-  * **W02 (Bulk Price Adjustment)**: **12.4x faster** (9.1 ms $\rightarrow$ 0.73 ms)
+  * **R11 (Seller Inbox LATERAL)**: **186.2x faster** (45.8 ms $\rightarrow$ 0.25 ms)
+  * **R21 (Un-engaged Listings Anti-join)**: **65.9x faster** (123.8 ms $\rightarrow$ 1.88 ms)
+  * **R01 (Geographic Listing Feed)**: **15.8x faster** (27.0 ms $\rightarrow$ 1.71 ms)
+  * **R04 (Keyword Search)**: **20.4x faster** (55.5 ms $\rightarrow$ 2.72 ms)
+  * **W02 (Bulk Price Adjustment)**: **11.3x faster** (11.4 ms $\rightarrow$ 1.01 ms)
 
 ### 5. [CP5 - Triggers, Stored Procedures & Materialized Views](dbms/08_triggers_and_views.sql)
 * **Materialized Views**:
-  * `mv_top_favourited_listings`: Eliminates full table scans on R09 (148 ms $\rightarrow$ <1 ms).
-  * `mv_seller_performance`: Pre-computes response time analytics and ratings for R25 & R05 (230 ms $\rightarrow$ <1 ms).
+  * `mv_top_favourited_listings`: Eliminates full table scans on R09 (130 ms $\rightarrow$ <1 ms).
+  * `mv_seller_performance`: Pre-computes response time analytics and ratings for R25 & R05 (221 ms $\rightarrow$ <1 ms).
   * `mv_category_summary`: Pre-aggregates sell-through rates and active pricing distributions.
 * **Integrity Triggers**:
   * `trg_prevent_self_favorite`: Prohibits sellers from favouriting their own listings.

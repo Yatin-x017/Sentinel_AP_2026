@@ -4,10 +4,10 @@
 Usage:  python3 run_timings.py <mode> [dbname]
         mode = baseline | indexed   (plans saved to plans/<mode>/)
 Writes (W*) run inside BEGIN ... ROLLBACK so the data is never changed.
-Each query: 1 warm-up run, then 5 timed runs; the median is reported.
+Each query: 1 warm-up run, then 3 timed runs (Run 1, Run 2, Run 3); the average is reported.
 Outputs plans/<mode>/<ID>.txt and plans/<mode>/summary.csv
 """
-import re, subprocess, statistics, sys, os, csv, tempfile
+import re, subprocess, sys, os, csv, tempfile
 
 mode = sys.argv[1]
 db = sys.argv[2] if len(sys.argv) > 2 else "olx"
@@ -17,7 +17,7 @@ os.makedirs(out, exist_ok=True)
 
 text = open(os.path.join(here, "04_queries.sql")).read()
 blocks = re.split(r"^-- \[(\w+)\] (.*)$", text, flags=re.M)
-queries = [(blocks[i], blocks[i+1], blocks[i+2].strip()) for i in range(1, len(blocks), 3)]
+queries = [(blocks[i], blocks[i+1], re.sub(r"^-- (READ|WRITE)\n", "", blocks[i+2].strip())) for i in range(1, len(blocks), 3)]
 
 def explain(sql, write):
     body = f"EXPLAIN (ANALYZE, BUFFERS) {sql}"
@@ -41,16 +41,17 @@ for qid, title, sql in queries:
     write = qid.startswith("W")
     explain(sql, write)                       # warm-up
     runs, plan = [], ""
-    for _ in range(5):
+    for _ in range(3):
         plan = explain(sql, write)
         runs.append(ms(plan, "Execution"))
     plan_ms = ms(plan, "Planning")
-    med = statistics.median(runs)
-    open(os.path.join(out, f"{qid}.txt"), "w").write(f"-- [{qid}] {title}\n-- median execution: {med:.3f} ms\n\n{plan}\n")
-    rows.append((qid, title, f"{plan_ms:.3f}", f"{med:.3f}", f"{min(runs):.3f}", f"{max(runs):.3f}"))
-    print(f"{qid:4} {med:10.3f} ms  {title}")
+    avg = sum(runs) / len(runs)
+    r1, r2, r3 = runs
+    open(os.path.join(out, f"{qid}.txt"), "w").write(f"-- [{qid}] {title}\n-- runs (ms): {r1:.3f} / {r2:.3f} / {r3:.3f}  average: {avg:.3f} ms\n\n{plan}\n")
+    rows.append((qid, "WRITE" if write else "READ", title, f"{plan_ms:.3f}", f"{r1:.3f}", f"{r2:.3f}", f"{r3:.3f}", f"{avg:.3f}"))
+    print(f"{qid:4} {r1:9.3f} {r2:9.3f} {r3:9.3f}  avg {avg:9.3f} ms  {title}")
 
 with open(os.path.join(out, "summary.csv"), "w", newline="") as f:
     w = csv.writer(f)
-    w.writerow(["id", "title", "planning_ms", "median_exec_ms", "min_ms", "max_ms"])
+    w.writerow(["id", "type", "title", "planning_ms", "run1_ms", "run2_ms", "run3_ms", "average_ms"])
     w.writerows(rows)

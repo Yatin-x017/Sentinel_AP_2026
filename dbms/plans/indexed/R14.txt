@@ -1,37 +1,37 @@
 -- [R14] Active listings and average price by state and city (ROLLUP)
--- median execution: 48.487 ms
+-- runs (ms): 59.686 / 60.189 / 60.588  average: 60.154 ms
 
-Sort  (cost=5420.02..5420.38 rows=145 width=57) (actual time=51.292..51.299 rows=26 loops=1)
+Sort  (cost=5409.89..5410.25 rows=145 width=57) (actual time=60.460..60.465 rows=26 loops=1)
   Sort Key: s.name, c.name
   Sort Method: quicksort  Memory: 26kB
   Buffers: shared hit=2401
-  ->  MixedAggregate  (cost=2.56..5414.82 rows=145 width=57) (actual time=51.243..51.262 rows=26 loops=1)
+  ->  MixedAggregate  (cost=2.56..5404.68 rows=145 width=57) (actual time=60.399..60.425 rows=26 loops=1)
         Hash Key: s.name, c.name
         Hash Key: s.name
         Group Key: ()
         Batches: 1  Memory Usage: 56kB
         Buffers: shared hit=2398
-        ->  Hash Join  (cost=2.56..4080.48 rows=59207 width=25) (actual time=0.050..26.373 rows=59279 loops=1)
+        ->  Hash Join  (cost=2.56..4078.00 rows=58867 width=25) (actual time=0.051..32.980 rows=59279 loops=1)
               Hash Cond: (c.state_id = s.state_id)
               Buffers: shared hit=2398
-              ->  Hash Join  (cost=1.38..3841.55 rows=59207 width=20) (actual time=0.026..19.214 rows=59279 loops=1)
+              ->  Hash Join  (cost=1.38..3840.43 rows=58867 width=20) (actual time=0.028..24.653 rows=59279 loops=1)
                     Hash Cond: (l.city_id = c.city_id)
                     Buffers: shared hit=2397
-                    ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=59207 width=12) (actual time=0.007..11.636 rows=59279 loops=1)
+                    ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=58867 width=12) (actual time=0.006..15.431 rows=59279 loops=1)
                           Filter: ((status)::text = 'active'::text)
                           Rows Removed by Filter: 40721
                           Buffers: shared hit=2396
-                    ->  Hash  (cost=1.17..1.17 rows=17 width=16) (actual time=0.007..0.009 rows=17 loops=1)
+                    ->  Hash  (cost=1.17..1.17 rows=17 width=16) (actual time=0.008..0.010 rows=17 loops=1)
                           Buckets: 1024  Batches: 1  Memory Usage: 9kB
                           Buffers: shared hit=1
                           ->  Seq Scan on cities c  (cost=0.00..1.17 rows=17 width=16) (actual time=0.001..0.003 rows=17 loops=1)
                                 Buffers: shared hit=1
-              ->  Hash  (cost=1.08..1.08 rows=8 width=13) (actual time=0.013..0.014 rows=8 loops=1)
+              ->  Hash  (cost=1.08..1.08 rows=8 width=13) (actual time=0.012..0.013 rows=8 loops=1)
                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
                     Buffers: shared hit=1
-                    ->  Seq Scan on states s  (cost=0.00..1.08 rows=8 width=13) (actual time=0.005..0.006 rows=8 loops=1)
+                    ->  Seq Scan on states s  (cost=0.00..1.08 rows=8 width=13) (actual time=0.003..0.005 rows=8 loops=1)
                           Buffers: shared hit=1
 Planning:
-  Buffers: shared hit=399
-Planning Time: 0.923 ms
-Execution Time: 51.417 ms
+  Buffers: shared hit=398
+Planning Time: 0.896 ms
+Execution Time: 60.588 ms

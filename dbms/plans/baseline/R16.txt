@@ -1,25 +1,25 @@
 -- [R16] Accepted offers: biggest discounts versus asking price
--- median execution: 42.591 ms
+-- runs (ms): 47.962 / 46.897 / 84.649  average: 59.836 ms
 
-Limit  (cost=5832.87..5832.92 rows=20 width=69) (actual time=38.133..38.140 rows=20 loops=1)
+Limit  (cost=5846.73..5846.78 rows=20 width=69) (actual time=84.544..84.551 rows=20 loops=1)
   Buffers: shared hit=2816
-  ->  Sort  (cost=5832.87..5874.26 rows=16555 width=69) (actual time=38.131..38.136 rows=20 loops=1)
+  ->  Sort  (cost=5846.73..5888.68 rows=16780 width=69) (actual time=84.542..84.547 rows=20 loops=1)
         Sort Key: (round((('100'::numeric * (l.price - o.amount)) / NULLIF(l.price, '0'::numeric)), 1)) DESC
         Sort Method: top-N heapsort  Memory: 27kB
         Buffers: shared hit=2816
-        ->  Hash Join  (cost=1248.86..5392.35 rows=16555 width=69) (actual time=6.386..34.760 rows=16643 loops=1)
+        ->  Hash Join  (cost=1251.68..5400.23 rows=16780 width=69) (actual time=19.606..76.883 rows=16643 loops=1)
               Hash Cond: (l.listing_id = o.listing_id)
               Buffers: shared hit=2813
-              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=29) (actual time=0.004..6.892 rows=100000 loops=1)
+              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=29) (actual time=0.003..16.713 rows=100000 loops=1)
                     Buffers: shared hit=2396
-              ->  Hash  (cost=1041.93..1041.93 rows=16555 width=16) (actual time=6.263..6.264 rows=16643 loops=1)
+              ->  Hash  (cost=1041.93..1041.93 rows=16780 width=16) (actual time=19.451..19.452 rows=16643 loops=1)
                     Buckets: 32768  Batches: 1  Memory Usage: 1084kB
                     Buffers: shared hit=417
-                    ->  Seq Scan on offers o  (cost=0.00..1041.93 rows=16555 width=16) (actual time=0.007..3.953 rows=16643 loops=1)
+                    ->  Seq Scan on offers o  (cost=0.00..1041.93 rows=16780 width=16) (actual time=0.008..8.941 rows=16643 loops=1)
                           Filter: ((status)::text = 'accepted'::text)
                           Rows Removed by Filter: 33351
                           Buffers: shared hit=417
 Planning:
-  Buffers: shared hit=208
-Planning Time: 0.552 ms
-Execution Time: 38.238 ms
+  Buffers: shared hit=206
+Planning Time: 0.550 ms
+Execution Time: 84.649 ms

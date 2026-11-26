@@ -1,27 +1,27 @@
 -- [R16] Accepted offers: biggest discounts versus asking price
--- median execution: 36.234 ms
+-- runs (ms): 42.903 / 44.778 / 46.739  average: 44.807 ms
 
-Limit  (cost=5686.94..5686.99 rows=20 width=69) (actual time=36.129..36.136 rows=20 loops=1)
+Limit  (cost=5704.88..5704.93 rows=20 width=69) (actual time=46.639..46.645 rows=20 loops=1)
   Buffers: shared hit=2863
-  ->  Sort  (cost=5686.94..5728.11 rows=16465 width=69) (actual time=36.127..36.133 rows=20 loops=1)
+  ->  Sort  (cost=5704.88..5746.61 rows=16691 width=69) (actual time=46.636..46.640 rows=20 loops=1)
         Sort Key: (round((('100'::numeric * (l.price - o.amount)) / NULLIF(l.price, '0'::numeric)), 1)) DESC
         Sort Method: top-N heapsort  Memory: 27kB
         Buffers: shared hit=2863
-        ->  Hash Join  (cost=1107.35..5248.82 rows=16465 width=69) (actual time=5.073..32.784 rows=16643 loops=1)
+        ->  Hash Join  (cost=1114.19..5260.74 rows=16691 width=69) (actual time=7.791..41.984 rows=16643 loops=1)
               Hash Cond: (l.listing_id = o.listing_id)
               Buffers: shared hit=2860
-              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=29) (actual time=0.005..6.821 rows=100000 loops=1)
+              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=29) (actual time=0.003..10.807 rows=100000 loops=1)
                     Buffers: shared hit=2396
-              ->  Hash  (cost=901.54..901.54 rows=16465 width=16) (actual time=4.953..4.956 rows=16643 loops=1)
+              ->  Hash  (cost=905.55..905.55 rows=16691 width=16) (actual time=7.653..7.654 rows=16643 loops=1)
                     Buckets: 32768  Batches: 1  Memory Usage: 1084kB
                     Buffers: shared hit=464
-                    ->  Bitmap Heap Scan on offers o  (cost=278.73..901.54 rows=16465 width=16) (actual time=0.369..2.899 rows=16643 loops=1)
+                    ->  Bitmap Heap Scan on offers o  (cost=279.92..905.55 rows=16691 width=16) (actual time=0.499..4.137 rows=16643 loops=1)
                           Recheck Cond: ((status)::text = 'accepted'::text)
                           Heap Blocks: exact=417
                           Buffers: shared hit=464
-                          ->  Bitmap Index Scan on idx_offers_accepted  (cost=0.00..274.61 rows=16465 width=0) (actual time=0.327..0.328 rows=16643 loops=1)
+                          ->  Bitmap Index Scan on idx_offers_accepted  (cost=0.00..275.74 rows=16691 width=0) (actual time=0.443..0.444 rows=16643 loops=1)
                                 Buffers: shared hit=47
 Planning:
-  Buffers: shared hit=351
-Planning Time: 0.753 ms
-Execution Time: 36.234 ms
+  Buffers: shared hit=350
+Planning Time: 0.800 ms
+Execution Time: 46.739 ms

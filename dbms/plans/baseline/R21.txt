@@ -1,37 +1,33 @@
--- [R21] Active listings that nobody has favourited or messaged (double NOT EXISTS)
--- median execution: 95.240 ms
+-- [R21] Active listings that nobody has favourited or messaged (double anti-join)
+-- runs (ms): 117.512 / 138.774 / 115.233  average: 123.840 ms
 
-Limit  (cost=9480.69..9494.36 rows=20 width=37) (actual time=124.070..127.400 rows=20 loops=1)
-  Buffers: shared hit=3017
-  ->  Nested Loop Anti Join  (cost=9480.69..18113.19 rows=12625 width=37) (actual time=124.068..127.396 rows=20 loops=1)
-        Buffers: shared hit=3017
-        ->  Gather Merge  (cost=9480.40..11755.59 rows=19963 width=37) (actual time=124.039..127.221 rows=34 loops=1)
-              Workers Planned: 1
-              Workers Launched: 1
-              Buffers: shared hit=2948
-              ->  Sort  (cost=8480.39..8509.75 rows=11743 width=37) (actual time=119.319..119.393 rows=513 loops=2)
-                    Sort Key: l.created_at
-                    Sort Method: quicksort  Memory: 573kB
-                    Buffers: shared hit=2948
-                    Worker 0:  Sort Method: quicksort  Memory: 515kB
-                    ->  Parallel Hash Anti Join  (cost=4320.06..7686.59 rows=11743 width=37) (actual time=68.075..117.226 rows=5542 loops=2)
-                          Hash Cond: (l.listing_id = f.listing_id)
-                          Buffers: shared hit=2912
-                          ->  Parallel Seq Scan on listings l  (cost=0.00..3131.29 rows=34937 width=37) (actual time=0.016..22.883 rows=29640 loops=2)
-                                Filter: ((status)::text = 'active'::text)
-                                Rows Removed by Filter: 20360
+Limit  (cost=10238.13..10238.18 rows=20 width=37) (actual time=115.042..115.051 rows=20 loops=1)
+  Buffers: shared hit=3637
+  ->  Sort  (cost=10238.13..10269.61 rows=12592 width=37) (actual time=115.040..115.046 rows=20 loops=1)
+        Sort Key: l.created_at
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=3637
+        ->  Hash Right Anti Join  (cost=6011.07..9903.06 rows=12592 width=37) (actual time=111.774..113.345 rows=6641 loops=1)
+              Hash Cond: (f.listing_id = l.listing_id)
+              Buffers: shared hit=3634
+              ->  Seq Scan on favorites f  (cost=0.00..2618.93 rows=169993 width=4) (actual time=0.018..14.370 rows=169993 loops=1)
+                    Buffers: shared hit=919
+              ->  Hash  (cost=5543.71..5543.71 rows=37389 width=37) (actual time=62.253..62.256 rows=35897 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 3071kB
+                    Buffers: shared hit=2715
+                    ->  Hash Right Anti Join  (cost=4387.71..5543.71 rows=37389 width=37) (actual time=46.810..53.319 rows=35897 loops=1)
+                          Hash Cond: (c.listing_id = l.listing_id)
+                          Buffers: shared hit=2715
+                          ->  Seq Scan on conversations c  (cost=0.00..819.00 rows=50000 width=4) (actual time=0.010..3.985 rows=50000 loops=1)
+                                Buffers: shared hit=319
+                          ->  Hash  (cost=3646.00..3646.00 rows=59337 width=37) (actual time=32.951..32.953 rows=59279 loops=1)
+                                Buckets: 65536  Batches: 1  Memory Usage: 4739kB
                                 Buffers: shared hit=2396
-                          ->  Parallel Hash  (cost=3434.69..3434.69 rows=70830 width=4) (actual time=66.324..66.325 rows=84996 loops=2)
-                                Buckets: 262144  Batches: 1  Memory Usage: 8736kB
-                                Buffers: shared hit=469
-                                ->  Parallel Index Only Scan using favorites_pkey on favorites f  (cost=0.42..3434.69 rows=70830 width=4) (actual time=0.052..24.100 rows=84996 loops=2)
-                                      Heap Fetches: 0
-                                      Buffers: shared hit=469
-        ->  Index Only Scan using conversations_listing_id_buyer_id_key on conversations c  (cost=0.29..0.32 rows=1 width=4) (actual time=0.005..0.005 rows=0 loops=34)
-              Index Cond: (listing_id = l.listing_id)
-              Heap Fetches: 0
-              Buffers: shared hit=69
+                                ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=59337 width=37) (actual time=0.009..17.923 rows=59279 loops=1)
+                                      Filter: ((status)::text = 'active'::text)
+                                      Rows Removed by Filter: 40721
+                                      Buffers: shared hit=2396
 Planning:
-  Buffers: shared hit=268
-Planning Time: 1.004 ms
-Execution Time: 127.530 ms
+  Buffers: shared hit=269
+Planning Time: 0.767 ms
+Execution Time: 115.233 ms

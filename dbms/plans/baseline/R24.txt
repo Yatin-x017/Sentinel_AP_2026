@@ -1,35 +1,35 @@
 -- [R24] Active listings priced 50% above their category average (CTE + join)
--- median execution: 57.031 ms
+-- runs (ms): 69.785 / 93.927 / 69.102  average: 77.605 ms
 
-Limit  (cost=8332.29..8332.34 rows=20 width=61) (actual time=56.814..56.822 rows=20 loops=1)
+Limit  (cost=8331.29..8331.34 rows=20 width=61) (actual time=69.015..69.022 rows=20 loops=1)
   Buffers: shared hit=4795
-  ->  Sort  (cost=8332.29..8381.78 rows=19798 width=61) (actual time=56.812..56.818 rows=20 loops=1)
+  ->  Sort  (cost=8331.29..8380.74 rows=19779 width=61) (actual time=69.013..69.018 rows=20 loops=1)
         Sort Key: l.price DESC
         Sort Method: top-N heapsort  Memory: 27kB
         Buffers: shared hit=4795
-        ->  Hash Join  (cost=3944.09..7805.47 rows=19798 width=61) (actual time=21.682..52.368 rows=15241 loops=1)
+        ->  Hash Join  (cost=3943.81..7804.98 rows=19779 width=61) (actual time=27.320..64.137 rows=15241 loops=1)
               Hash Cond: (l.category_id = a.category_id)
               Join Filter: (l.price > (1.5 * a.avg_price))
               Rows Removed by Join Filter: 44038
               Buffers: shared hit=4792
-              ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=59393 width=33) (actual time=0.007..11.032 rows=59279 loops=1)
+              ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=59337 width=33) (actual time=0.048..14.524 rows=59279 loops=1)
                     Filter: ((status)::text = 'active'::text)
                     Rows Removed by Filter: 40721
                     Buffers: shared hit=2396
-              ->  Hash  (cost=3943.69..3943.69 rows=32 width=36) (actual time=21.656..21.659 rows=32 loops=1)
+              ->  Hash  (cost=3943.41..3943.41 rows=32 width=36) (actual time=27.248..27.251 rows=32 loops=1)
                     Buckets: 1024  Batches: 1  Memory Usage: 10kB
                     Buffers: shared hit=2396
-                    ->  Subquery Scan on a  (cost=3942.97..3943.69 rows=32 width=36) (actual time=21.626..21.643 rows=32 loops=1)
+                    ->  Subquery Scan on a  (cost=3942.69..3943.41 rows=32 width=36) (actual time=27.209..27.230 rows=32 loops=1)
                           Buffers: shared hit=2396
-                          ->  HashAggregate  (cost=3942.97..3943.37 rows=32 width=36) (actual time=21.625..21.638 rows=32 loops=1)
+                          ->  HashAggregate  (cost=3942.69..3943.09 rows=32 width=36) (actual time=27.207..27.224 rows=32 loops=1)
                                 Group Key: listings.category_id
                                 Batches: 1  Memory Usage: 32kB
                                 Buffers: shared hit=2396
-                                ->  Seq Scan on listings  (cost=0.00..3646.00 rows=59393 width=12) (actual time=0.001..11.475 rows=59279 loops=1)
+                                ->  Seq Scan on listings  (cost=0.00..3646.00 rows=59337 width=12) (actual time=0.002..15.545 rows=59279 loops=1)
                                       Filter: ((status)::text = 'active'::text)
                                       Rows Removed by Filter: 40721
                                       Buffers: shared hit=2396
 Planning:
-  Buffers: shared hit=122
-Planning Time: 0.443 ms
-Execution Time: 56.904 ms
+  Buffers: shared hit=120
+Planning Time: 0.448 ms
+Execution Time: 69.102 ms

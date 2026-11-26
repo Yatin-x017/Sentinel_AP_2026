@@ -1,35 +1,35 @@
 -- [R02] Active listing count per top-level category (self-join + GROUP BY)
--- median execution: 21.185 ms
+-- runs (ms): 45.208 / 38.800 / 38.279  average: 40.762 ms
 
-Sort  (cost=2384.12..2384.22 rows=40 width=17) (actual time=19.819..19.822 rows=8 loops=1)
+Sort  (cost=4284.12..4284.22 rows=40 width=17) (actual time=38.178..38.186 rows=8 loops=1)
   Sort Key: (count(*)) DESC
   Sort Method: quicksort  Memory: 25kB
-  Buffers: shared hit=269
-  ->  HashAggregate  (cost=2382.65..2383.05 rows=40 width=17) (actual time=19.798..19.801 rows=8 loops=1)
+  Buffers: shared hit=2401
+  ->  HashAggregate  (cost=4282.66..4283.06 rows=40 width=17) (actual time=38.150..38.159 rows=8 loops=1)
         Group Key: p.name
         Batches: 1  Memory Usage: 24kB
-        Buffers: shared hit=266
-        ->  Hash Join  (cost=4.09..2086.62 rows=59207 width=9) (actual time=0.076..14.562 rows=59279 loops=1)
+        Buffers: shared hit=2398
+        ->  Hash Join  (cost=3.80..3988.32 rows=58867 width=9) (actual time=0.064..29.950 rows=59279 loops=1)
               Hash Cond: (c.parent_id = p.category_id)
-              Buffers: shared hit=266
-              ->  Hash Join  (cost=2.19..1916.13 rows=59207 width=4) (actual time=0.048..9.106 rows=59279 loops=1)
+              Buffers: shared hit=2398
+              ->  Hash Join  (cost=1.90..3818.80 rows=58867 width=4) (actual time=0.031..22.417 rows=59279 loops=1)
                     Hash Cond: (l.category_id = c.category_id)
-                    Buffers: shared hit=265
-                    ->  Index Only Scan using idx_listings_category_status on listings l  (cost=0.29..1742.34 rows=59207 width=4) (actual time=0.027..3.346 rows=59279 loops=1)
-                          Index Cond: (status = 'active'::text)
-                          Heap Fetches: 268
-                          Buffers: shared hit=264
-                    ->  Hash  (cost=1.40..1.40 rows=40 width=8) (actual time=0.008..0.008 rows=40 loops=1)
+                    Buffers: shared hit=2397
+                    ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=58867 width=4) (actual time=0.005..14.459 rows=59279 loops=1)
+                          Filter: ((status)::text = 'active'::text)
+                          Rows Removed by Filter: 40721
+                          Buffers: shared hit=2396
+                    ->  Hash  (cost=1.40..1.40 rows=40 width=8) (actual time=0.011..0.013 rows=40 loops=1)
                           Buckets: 1024  Batches: 1  Memory Usage: 10kB
                           Buffers: shared hit=1
-                          ->  Seq Scan on categories c  (cost=0.00..1.40 rows=40 width=8) (actual time=0.001..0.003 rows=40 loops=1)
+                          ->  Seq Scan on categories c  (cost=0.00..1.40 rows=40 width=8) (actual time=0.001..0.004 rows=40 loops=1)
                                 Buffers: shared hit=1
-              ->  Hash  (cost=1.40..1.40 rows=40 width=13) (actual time=0.018..0.018 rows=40 loops=1)
+              ->  Hash  (cost=1.40..1.40 rows=40 width=13) (actual time=0.019..0.023 rows=40 loops=1)
                     Buckets: 1024  Batches: 1  Memory Usage: 10kB
                     Buffers: shared hit=1
-                    ->  Seq Scan on categories p  (cost=0.00..1.40 rows=40 width=13) (actual time=0.004..0.006 rows=40 loops=1)
+                    ->  Seq Scan on categories p  (cost=0.00..1.40 rows=40 width=13) (actual time=0.004..0.008 rows=40 loops=1)
                           Buffers: shared hit=1
 Planning:
-  Buffers: shared hit=375
-Planning Time: 0.755 ms
-Execution Time: 19.904 ms
+  Buffers: shared hit=374
+Planning Time: 0.802 ms
+Execution Time: 38.279 ms

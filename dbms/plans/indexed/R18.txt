@@ -1,20 +1,23 @@
 -- [R18] Daily new listings and 7-day moving average, last 30 days (window)
--- median execution: 2.729 ms
+-- runs (ms): 8.586 / 8.282 / 10.173  average: 9.014 ms
 
-WindowAgg  (cost=833.10..1143.75 rows=8284 width=44) (actual time=1.724..2.564 rows=31 loops=1)
-  Buffers: shared hit=65
-  ->  GroupAggregate  (cost=833.10..998.78 rows=8284 width=12) (actual time=1.683..2.463 rows=31 loops=1)
+WindowAgg  (cost=3271.82..3586.40 rows=8389 width=44) (actual time=9.168..10.084 rows=31 loops=1)
+  Buffers: shared hit=2357
+  ->  GroupAggregate  (cost=3271.82..3439.60 rows=8389 width=12) (actual time=9.125..10.046 rows=31 loops=1)
         Group Key: ((listings.created_at)::date)
-        Buffers: shared hit=65
-        ->  Sort  (cost=833.10..853.81 rows=8284 width=4) (actual time=1.653..1.968 rows=8347 loops=1)
+        Buffers: shared hit=2357
+        ->  Sort  (cost=3271.82..3292.79 rows=8389 width=4) (actual time=9.089..9.478 rows=8348 loops=1)
               Sort Key: ((listings.created_at)::date)
               Sort Method: quicksort  Memory: 385kB
-              Buffers: shared hit=65
-              ->  Index Only Scan using idx_listings_created_at on listings  (cost=0.30..293.98 rows=8284 width=4) (actual time=0.048..1.158 rows=8347 loops=1)
-                    Index Cond: (created_at >= (now() - '30 days'::interval))
-                    Heap Fetches: 34
-                    Buffers: shared hit=62
+              Buffers: shared hit=2357
+              ->  Bitmap Heap Scan on listings  (cost=161.31..2725.09 rows=8389 width=4) (actual time=1.198..8.019 rows=8348 loops=1)
+                    Recheck Cond: (created_at >= (now() - '30 days'::interval))
+                    Heap Blocks: exact=2326
+                    Buffers: shared hit=2354
+                    ->  Bitmap Index Scan on idx_listings_created_at  (cost=0.00..159.21 rows=8389 width=0) (actual time=0.907..0.908 rows=8348 loops=1)
+                          Index Cond: (created_at >= (now() - '30 days'::interval))
+                          Buffers: shared hit=28
 Planning:
-  Buffers: shared hit=210
-Planning Time: 0.891 ms
-Execution Time: 2.700 ms
+  Buffers: shared hit=211
+Planning Time: 0.571 ms
+Execution Time: 10.173 ms

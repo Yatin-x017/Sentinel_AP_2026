@@ -1,24 +1,24 @@
 -- [R03] Negotiable smartphones priced 10,000-40,000 (filter + sort)
--- median execution: 5.133 ms
+-- runs (ms): 4.632 / 4.510 / 4.706  average: 4.616 ms
 
-Limit  (cost=0.41..1574.13 rows=50 width=35) (actual time=0.213..5.145 rows=50 loops=1)
+Limit  (cost=0.41..1573.75 rows=50 width=35) (actual time=0.217..4.672 rows=50 loops=1)
   Buffers: shared hit=3750
-  ->  Nested Loop  (cost=0.41..10449.87 rows=332 width=35) (actual time=0.212..5.138 rows=50 loops=1)
+  ->  Nested Loop  (cost=0.41..10447.37 rows=332 width=35) (actual time=0.216..4.664 rows=50 loops=1)
         Join Filter: (c.category_id = l.category_id)
         Rows Removed by Join Filter: 2543
         Buffers: shared hit=3750
-        ->  Index Scan using idx_listings_active_price on listings l  (cost=0.41..10249.12 rows=13283 width=39) (actual time=0.026..4.447 rows=2593 loops=1)
+        ->  Index Scan using idx_listings_active_price on listings l  (cost=0.41..10246.84 rows=13268 width=39) (actual time=0.019..4.017 rows=2593 loops=1)
               Index Cond: ((price >= '10000'::numeric) AND (price <= '40000'::numeric))
               Filter: is_negotiable
               Rows Removed by Filter: 1139
               Buffers: shared hit=3749
         ->  Materialize  (cost=0.00..1.50 rows=1 width=4) (actual time=0.000..0.000 rows=1 loops=2593)
               Buffers: shared hit=1
-              ->  Seq Scan on categories c  (cost=0.00..1.50 rows=1 width=4) (actual time=0.004..0.006 rows=1 loops=1)
+              ->  Seq Scan on categories c  (cost=0.00..1.50 rows=1 width=4) (actual time=0.003..0.005 rows=1 loops=1)
                     Filter: ((name)::text = 'Smartphones'::text)
                     Rows Removed by Filter: 39
                     Buffers: shared hit=1
 Planning:
-  Buffers: shared hit=370
-Planning Time: 0.810 ms
-Execution Time: 5.181 ms
+  Buffers: shared hit=369
+Planning Time: 0.812 ms
+Execution Time: 4.706 ms

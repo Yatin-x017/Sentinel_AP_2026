@@ -1,26 +1,26 @@
 -- [R06] Average price per category with more than 500 listings (HAVING)
--- median execution: 44.499 ms
+-- runs (ms): 50.444 / 51.575 / 51.732  average: 51.250 ms
 
-Sort  (cost=4439.09..4439.12 rows=13 width=49) (actual time=44.573..44.579 rows=32 loops=1)
+Sort  (cost=4439.09..4439.12 rows=13 width=49) (actual time=51.604..51.609 rows=32 loops=1)
   Sort Key: (round(avg(l.price), 2)) DESC
   Sort Method: quicksort  Memory: 26kB
   Buffers: shared hit=2400
-  ->  HashAggregate  (cost=4438.21..4438.85 rows=13 width=49) (actual time=44.526..44.542 rows=32 loops=1)
+  ->  HashAggregate  (cost=4438.21..4438.85 rows=13 width=49) (actual time=51.555..51.572 rows=32 loops=1)
         Group Key: c.name
         Filter: (count(*) > 500)
         Batches: 1  Memory Usage: 32kB
         Buffers: shared hit=2397
-        ->  Hash Join  (cost=1.90..3688.21 rows=100000 width=17) (actual time=0.042..24.191 rows=100000 loops=1)
+        ->  Hash Join  (cost=1.90..3688.21 rows=100000 width=17) (actual time=0.035..28.454 rows=100000 loops=1)
               Hash Cond: (l.category_id = c.category_id)
               Buffers: shared hit=2397
-              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=12) (actual time=0.007..7.561 rows=100000 loops=1)
+              ->  Seq Scan on listings l  (cost=0.00..3396.00 rows=100000 width=12) (actual time=0.004..10.320 rows=100000 loops=1)
                     Buffers: shared hit=2396
-              ->  Hash  (cost=1.40..1.40 rows=40 width=13) (actual time=0.022..0.023 rows=40 loops=1)
+              ->  Hash  (cost=1.40..1.40 rows=40 width=13) (actual time=0.018..0.019 rows=40 loops=1)
                     Buckets: 1024  Batches: 1  Memory Usage: 10kB
                     Buffers: shared hit=1
                     ->  Seq Scan on categories c  (cost=0.00..1.40 rows=40 width=13) (actual time=0.003..0.007 rows=40 loops=1)
                           Buffers: shared hit=1
 Planning:
-  Buffers: shared hit=377
-Planning Time: 0.794 ms
-Execution Time: 44.757 ms
+  Buffers: shared hit=376
+Planning Time: 0.762 ms
+Execution Time: 51.732 ms

@@ -1,37 +1,37 @@
 -- [R11] Seller inbox: chats on my listings with the latest message (LATERAL)
--- median execution: 33.135 ms
+-- runs (ms): 44.484 / 47.311 / 45.653  average: 45.816 ms
 
-Sort  (cost=10688.32..10688.33 rows=2 width=62) (actual time=34.537..34.542 rows=4 loops=1)
+Sort  (cost=10688.32..10688.33 rows=2 width=62) (actual time=45.554..45.558 rows=4 loops=1)
   Sort Key: messages.sent_at DESC
   Sort Method: quicksort  Memory: 25kB
   Buffers: shared hit=8920
-  ->  Nested Loop  (cost=3500.59..10688.31 rows=2 width=62) (actual time=9.056..34.515 rows=4 loops=1)
+  ->  Nested Loop  (cost=3500.59..10688.31 rows=2 width=62) (actual time=12.530..45.522 rows=4 loops=1)
         Buffers: shared hit=8917
-        ->  Nested Loop  (cost=0.58..3688.26 rows=2 width=31) (actual time=1.973..7.500 rows=4 loops=1)
+        ->  Nested Loop  (cost=0.58..3688.26 rows=2 width=31) (actual time=2.817..9.426 rows=4 loops=1)
               Buffers: shared hit=2417
-              ->  Nested Loop  (cost=0.29..3687.59 rows=2 width=25) (actual time=1.941..7.439 rows=4 loops=1)
+              ->  Nested Loop  (cost=0.29..3687.59 rows=2 width=25) (actual time=2.796..9.364 rows=4 loops=1)
                     Buffers: shared hit=2405
-                    ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=5 width=21) (actual time=1.908..7.363 rows=3 loops=1)
+                    ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=5 width=21) (actual time=2.770..9.292 rows=3 loops=1)
                           Filter: (seller_id = 7)
                           Rows Removed by Filter: 99997
                           Buffers: shared hit=2396
-                    ->  Index Scan using conversations_listing_id_buyer_id_key on conversations c  (cost=0.29..8.31 rows=1 width=12) (actual time=0.016..0.019 rows=1 loops=3)
+                    ->  Index Scan using conversations_listing_id_buyer_id_key on conversations c  (cost=0.29..8.31 rows=1 width=12) (actual time=0.014..0.018 rows=1 loops=3)
                           Index Cond: (listing_id = l.listing_id)
                           Buffers: shared hit=9
-              ->  Index Scan using users_pkey on users b  (cost=0.29..0.34 rows=1 width=14) (actual time=0.013..0.013 rows=1 loops=4)
+              ->  Index Scan using users_pkey on users b  (cost=0.29..0.34 rows=1 width=14) (actual time=0.012..0.012 rows=1 loops=4)
                     Index Cond: (user_id = c.buyer_id)
                     Buffers: shared hit=12
-        ->  Limit  (cost=3500.01..3500.02 rows=1 width=31) (actual time=6.749..6.750 rows=1 loops=4)
+        ->  Limit  (cost=3500.01..3500.02 rows=1 width=31) (actual time=9.020..9.020 rows=1 loops=4)
               Buffers: shared hit=6500
-              ->  Sort  (cost=3500.01..3500.02 rows=3 width=31) (actual time=6.746..6.746 rows=1 loops=4)
+              ->  Sort  (cost=3500.01..3500.02 rows=3 width=31) (actual time=9.013..9.013 rows=1 loops=4)
                     Sort Key: messages.sent_at DESC
                     Sort Method: top-N heapsort  Memory: 25kB
                     Buffers: shared hit=6500
-                    ->  Seq Scan on messages  (cost=0.00..3500.00 rows=3 width=31) (actual time=0.747..6.730 rows=3 loops=4)
+                    ->  Seq Scan on messages  (cost=0.00..3500.00 rows=3 width=31) (actual time=1.109..8.998 rows=3 loops=4)
                           Filter: (conversation_id = c.conversation_id)
                           Rows Removed by Filter: 149997
                           Buffers: shared hit=6500
 Planning:
   Buffers: shared hit=334
-Planning Time: 0.868 ms
-Execution Time: 34.602 ms
+Planning Time: 1.379 ms
+Execution Time: 45.653 ms

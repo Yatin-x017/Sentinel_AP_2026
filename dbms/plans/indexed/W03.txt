@@ -1,30 +1,30 @@
 -- [W03] Mark a listing as sold and record the transaction (atomic CTE)
--- median execution: 1.477 ms
+-- runs (ms): 1.346 / 1.479 / 1.366  average: 1.397 ms
 
-Insert on transactions  (cost=9.04..9.08 rows=0 width=0) (actual time=0.266..0.267 rows=0 loops=1)
-  Buffers: shared hit=102
+Insert on transactions  (cost=9.04..9.08 rows=0 width=0) (actual time=0.236..0.237 rows=0 loops=1)
+  Buffers: shared hit=99
   CTE pick
-    ->  Limit  (cost=0.42..0.58 rows=1 width=16) (actual time=0.045..0.046 rows=1 loops=1)
+    ->  Limit  (cost=0.42..0.58 rows=1 width=16) (actual time=0.033..0.033 rows=1 loops=1)
           Buffers: shared hit=5
-          ->  Index Scan using listings_pkey on listings  (cost=0.42..9504.51 rows=59203 width=16) (actual time=0.044..0.044 rows=1 loops=1)
+          ->  Index Scan using listings_pkey on listings  (cost=0.42..9609.47 rows=58863 width=16) (actual time=0.032..0.032 rows=1 loops=1)
                 Filter: ((seller_id <> 77) AND ((status)::text = 'active'::text))
                 Rows Removed by Filter: 1
                 Buffers: shared hit=5
   CTE upd
-    ->  Update on listings l  (cost=0.42..8.46 rows=1 width=80) (actual time=1.020..1.023 rows=1 loops=1)
+    ->  Update on listings l  (cost=0.42..8.46 rows=1 width=80) (actual time=0.557..0.558 rows=1 loops=1)
           Buffers: shared hit=63
-          ->  Nested Loop  (cost=0.42..8.46 rows=1 width=80) (actual time=0.024..0.025 rows=1 loops=1)
+          ->  Nested Loop  (cost=0.42..8.46 rows=1 width=80) (actual time=0.022..0.023 rows=1 loops=1)
                 Buffers: shared hit=4
-                ->  CTE Scan on pick  (cost=0.00..0.02 rows=1 width=32) (actual time=0.013..0.014 rows=1 loops=1)
-                ->  Index Scan using listings_pkey on listings l  (cost=0.42..8.44 rows=1 width=10) (actual time=0.008..0.008 rows=1 loops=1)
+                ->  CTE Scan on pick  (cost=0.00..0.02 rows=1 width=32) (actual time=0.013..0.013 rows=1 loops=1)
+                ->  Index Scan using listings_pkey on listings l  (cost=0.42..8.44 rows=1 width=10) (actual time=0.007..0.007 rows=1 loops=1)
                       Index Cond: (listing_id = pick.listing_id)
                       Buffers: shared hit=4
-  ->  CTE Scan on pick p  (cost=0.00..0.04 rows=1 width=40) (actual time=0.094..0.095 rows=1 loops=1)
+  ->  CTE Scan on pick p  (cost=0.00..0.04 rows=1 width=40) (actual time=0.076..0.076 rows=1 loops=1)
         Buffers: shared hit=18
 Planning:
-  Buffers: shared hit=229
-Planning Time: 0.662 ms
-Trigger for constraint transactions_listing_id_fkey on transactions: time=0.230 calls=1
-Trigger for constraint transactions_buyer_id_fkey on transactions: time=0.252 calls=1
-Trigger for constraint transactions_seller_id_fkey on transactions: time=0.054 calls=1
-Execution Time: 1.917 ms
+  Buffers: shared hit=228
+Planning Time: 0.689 ms
+Trigger for constraint transactions_listing_id_fkey on transactions: time=0.190 calls=1
+Trigger for constraint transactions_buyer_id_fkey on transactions: time=0.217 calls=1
+Trigger for constraint transactions_seller_id_fkey on transactions: time=0.075 calls=1
+Execution Time: 1.366 ms

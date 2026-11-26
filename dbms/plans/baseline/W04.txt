@@ -1,24 +1,24 @@
 -- [W04] Buyer leaves a 5-star review on a sale that has no review yet
--- median execution: 0.759 ms
+-- runs (ms): 0.602 / 0.601 / 0.589  average: 0.597 ms
 
-Insert on reviews  (cost=0.57..0.81 rows=0 width=0) (actual time=0.225..0.226 rows=0 loops=1)
-  Buffers: shared hit=38
-  ->  Subquery Scan on "*SELECT*"  (cost=0.57..0.81 rows=1 width=58) (actual time=0.102..0.104 rows=1 loops=1)
-        Buffers: shared hit=20
-        ->  Limit  (cost=0.57..0.78 rows=1 width=48) (actual time=0.039..0.041 rows=1 loops=1)
-              Buffers: shared hit=7
-              ->  Merge Anti Join  (cost=0.57..979.63 rows=4575 width=48) (actual time=0.038..0.038 rows=1 loops=1)
+Insert on reviews  (cost=0.57..0.86 rows=0 width=0) (actual time=0.133..0.134 rows=0 loops=1)
+  Buffers: shared hit=37
+  ->  Subquery Scan on "*SELECT*"  (cost=0.57..0.86 rows=1 width=58) (actual time=0.067..0.068 rows=1 loops=1)
+        Buffers: shared hit=21
+        ->  Limit  (cost=0.57..0.83 rows=1 width=48) (actual time=0.033..0.034 rows=1 loops=1)
+              Buffers: shared hit=8
+              ->  Merge Anti Join  (cost=0.57..1210.25 rows=4575 width=48) (actual time=0.032..0.033 rows=1 loops=1)
                     Merge Cond: (t.transaction_id = r.transaction_id)
-                    Buffers: shared hit=7
-                    ->  Index Scan using transactions_pkey on transactions t  (cost=0.29..528.57 rows=15086 width=12) (actual time=0.008..0.008 rows=2 loops=1)
+                    Buffers: shared hit=8
+                    ->  Index Scan using transactions_pkey on transactions t  (cost=0.29..528.57 rows=15086 width=12) (actual time=0.004..0.004 rows=2 loops=1)
                           Buffers: shared hit=3
-                    ->  Index Only Scan using reviews_transaction_id_reviewer_id_key on reviews r  (cost=0.29..281.95 rows=10511 width=4) (actual time=0.017..0.024 rows=2 loops=1)
-                          Heap Fetches: 1
-                          Buffers: shared hit=4
+                    ->  Index Only Scan using reviews_transaction_id_reviewer_id_key on reviews r  (cost=0.29..512.57 rows=10511 width=4) (actual time=0.018..0.023 rows=2 loops=1)
+                          Heap Fetches: 3
+                          Buffers: shared hit=5
 Planning:
   Buffers: shared hit=163
-Planning Time: 0.633 ms
-Trigger for constraint reviews_transaction_id_fkey: time=0.195 calls=1
-Trigger for constraint reviews_reviewer_id_fkey: time=0.213 calls=1
-Trigger for constraint reviews_reviewee_id_fkey: time=0.042 calls=1
-Execution Time: 0.759 ms
+Planning Time: 0.637 ms
+Trigger for constraint reviews_transaction_id_fkey: time=0.157 calls=1
+Trigger for constraint reviews_reviewer_id_fkey: time=0.198 calls=1
+Trigger for constraint reviews_reviewee_id_fkey: time=0.041 calls=1
+Execution Time: 0.589 ms

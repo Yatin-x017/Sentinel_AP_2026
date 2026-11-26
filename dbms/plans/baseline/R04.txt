@@ -1,17 +1,17 @@
 -- [R04] Keyword search on title (pattern match)
--- median execution: 40.980 ms
+-- runs (ms): 60.866 / 53.253 / 52.253  average: 55.457 ms
 
-Limit  (cost=3949.16..3949.24 rows=30 width=41) (actual time=40.943..40.949 rows=30 loops=1)
+Limit  (cost=3949.10..3949.18 rows=30 width=41) (actual time=52.189..52.194 rows=30 loops=1)
   Buffers: shared hit=2399
-  ->  Sort  (cost=3949.16..3953.66 rows=1800 width=41) (actual time=40.940..40.943 rows=30 loops=1)
+  ->  Sort  (cost=3949.10..3953.60 rows=1798 width=41) (actual time=52.187..52.189 rows=30 loops=1)
         Sort Key: created_at DESC
         Sort Method: top-N heapsort  Memory: 28kB
         Buffers: shared hit=2399
-        ->  Seq Scan on listings  (cost=0.00..3896.00 rows=1800 width=41) (actual time=0.018..40.491 rows=2009 loops=1)
+        ->  Seq Scan on listings  (cost=0.00..3896.00 rows=1798 width=41) (actual time=0.030..51.581 rows=2009 loops=1)
               Filter: (((title)::text ~~* '%iphone%'::text) AND ((status)::text = 'active'::text))
               Rows Removed by Filter: 97991
               Buffers: shared hit=2396
 Planning:
   Buffers: shared hit=94
-Planning Time: 0.410 ms
-Execution Time: 40.980 ms
+Planning Time: 0.553 ms
+Execution Time: 52.253 ms

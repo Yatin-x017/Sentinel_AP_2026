@@ -1,13 +1,13 @@
 -- [W02] Price drop: cut all of seller 123's active listings by 10%
--- median execution: 9.101 ms
+-- runs (ms): 11.427 / 11.445 / 11.460  average: 11.444 ms
 
-Update on listings  (cost=0.00..3896.02 rows=0 width=0) (actual time=8.385..8.386 rows=0 loops=1)
+Update on listings  (cost=0.00..3896.02 rows=0 width=0) (actual time=11.401..11.402 rows=0 loops=1)
   Buffers: shared hit=2439
-  ->  Seq Scan on listings  (cost=0.00..3896.02 rows=3 width=22) (actual time=1.798..8.136 rows=3 loops=1)
+  ->  Seq Scan on listings  (cost=0.00..3896.02 rows=3 width=22) (actual time=2.327..11.171 rows=3 loops=1)
         Filter: ((seller_id = 123) AND ((status)::text = 'active'::text))
         Rows Removed by Filter: 99997
         Buffers: shared hit=2396
 Planning:
   Buffers: shared hit=71
-Planning Time: 0.323 ms
-Execution Time: 8.454 ms
+Planning Time: 0.266 ms
+Execution Time: 11.460 ms

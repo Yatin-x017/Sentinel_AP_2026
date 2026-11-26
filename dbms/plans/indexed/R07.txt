@@ -1,17 +1,17 @@
--- [R07] Users who have never posted a listing (NOT EXISTS)
--- median execution: 6.020 ms
+-- [R07] Users who have never posted a listing (anti-join: LEFT JOIN ... IS NULL)
+-- runs (ms): 11.260 / 10.738 / 10.725  average: 10.908 ms
 
-Limit  (cost=0.58..141.80 rows=50 width=35) (actual time=0.021..5.997 rows=50 loops=1)
-  Buffers: shared hit=338
-  ->  Merge Anti Join  (cost=0.58..4279.58 rows=1515 width=35) (actual time=0.020..5.990 rows=50 loops=1)
-        Merge Cond: (u.user_id = l.seller_id)
-        Buffers: shared hit=338
-        ->  Index Scan using users_pkey on users u  (cost=0.29..859.29 rows=20000 width=35) (actual time=0.005..0.893 rows=7593 loops=1)
+Limit  (cost=0.58..312.94 rows=50 width=35) (actual time=0.023..10.688 rows=50 loops=1)
+  Buffers: shared hit=22876
+  ->  Nested Loop Anti Join  (cost=0.58..10570.79 rows=1692 width=35) (actual time=0.022..10.680 rows=50 loops=1)
+        Buffers: shared hit=22876
+        ->  Index Scan using users_pkey on users u  (cost=0.29..859.29 rows=20000 width=35) (actual time=0.006..1.175 rows=7593 loops=1)
               Buffers: shared hit=147
-        ->  Index Only Scan using idx_listings_seller on listings l  (cost=0.29..2120.29 rows=100000 width=4) (actual time=0.010..2.444 rows=37859 loops=1)
-              Heap Fetches: 145
-              Buffers: shared hit=191
+        ->  Index Only Scan using idx_listings_seller on listings l  (cost=0.29..0.89 rows=5 width=4) (actual time=0.001..0.001 rows=1 loops=7593)
+              Index Cond: (seller_id = u.user_id)
+              Heap Fetches: 7543
+              Buffers: shared hit=22729
 Planning:
-  Buffers: shared hit=273
-Planning Time: 0.701 ms
-Execution Time: 6.046 ms
+  Buffers: shared hit=272
+Planning Time: 0.691 ms
+Execution Time: 10.725 ms

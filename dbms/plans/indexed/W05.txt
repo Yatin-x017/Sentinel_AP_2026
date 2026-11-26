@@ -1,23 +1,23 @@
 -- [W05] Housekeeping: delete stale favourites of listings that are no longer active
--- median execution: 58.408 ms
+-- runs (ms): 64.856 / 68.643 / 66.788  average: 66.762 ms
 
-Delete on favorites f  (cost=4155.91..8161.21 rows=0 width=0) (actual time=58.290..58.294 rows=0 loops=1)
+Delete on favorites f  (cost=4160.16..8165.74 rows=0 width=0) (actual time=66.665..66.668 rows=0 loops=1)
   Buffers: shared hit=20594
-  ->  Hash Join  (cost=4155.91..8161.21 rows=17314 width=12) (actual time=17.746..53.275 rows=17279 loops=1)
+  ->  Hash Join  (cost=4160.16..8165.74 rows=17503 width=12) (actual time=19.240..60.039 rows=17279 loops=1)
         Hash Cond: (f.listing_id = l.listing_id)
         Buffers: shared hit=3315
-        ->  Seq Scan on favorites f  (cost=0.00..3893.88 rows=42444 width=10) (actual time=0.011..26.679 rows=42579 loops=1)
+        ->  Seq Scan on favorites f  (cost=0.00..3893.88 rows=42552 width=10) (actual time=0.011..31.226 rows=42579 loops=1)
               Filter: (created_at < (now() - '150 days'::interval))
               Rows Removed by Filter: 127414
               Buffers: shared hit=919
-        ->  Hash  (cost=3646.00..3646.00 rows=40793 width=10) (actual time=17.501..17.503 rows=40721 loops=1)
+        ->  Hash  (cost=3646.00..3646.00 rows=41133 width=10) (actual time=19.005..19.006 rows=40721 loops=1)
               Buckets: 65536  Batches: 1  Memory Usage: 2262kB
               Buffers: shared hit=2396
-              ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=40793 width=10) (actual time=0.008..11.828 rows=40721 loops=1)
+              ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=41133 width=10) (actual time=0.005..13.190 rows=40721 loops=1)
                     Filter: ((status)::text <> 'active'::text)
                     Rows Removed by Filter: 59279
                     Buffers: shared hit=2396
 Planning:
   Buffers: shared hit=356
-Planning Time: 0.912 ms
-Execution Time: 58.408 ms
+Planning Time: 0.929 ms
+Execution Time: 66.788 ms

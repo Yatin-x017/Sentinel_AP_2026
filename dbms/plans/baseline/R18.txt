@@ -1,20 +1,20 @@
 -- [R18] Daily new listings and 7-day moving average, last 30 days (window)
--- median execution: 18.902 ms
+-- runs (ms): 24.879 / 24.109 / 27.918  average: 25.635 ms
 
-WindowAgg  (cost=4722.69..5041.78 rows=8509 width=44) (actual time=17.895..18.723 rows=31 loops=1)
+WindowAgg  (cost=4721.56..5040.09 rows=8494 width=44) (actual time=26.750..27.806 rows=31 loops=1)
   Buffers: shared hit=2399
-  ->  GroupAggregate  (cost=4722.69..4892.87 rows=8509 width=12) (actual time=17.848..18.682 rows=31 loops=1)
+  ->  GroupAggregate  (cost=4721.56..4891.44 rows=8494 width=12) (actual time=26.701..27.756 rows=31 loops=1)
         Group Key: ((listings.created_at)::date)
         Buffers: shared hit=2399
-        ->  Sort  (cost=4722.69..4743.96 rows=8509 width=4) (actual time=17.813..18.148 rows=8348 loops=1)
+        ->  Sort  (cost=4721.56..4742.80 rows=8494 width=4) (actual time=26.662..27.128 rows=8348 loops=1)
               Sort Key: ((listings.created_at)::date)
               Sort Method: quicksort  Memory: 385kB
               Buffers: shared hit=2399
-              ->  Seq Scan on listings  (cost=0.00..4167.27 rows=8509 width=4) (actual time=0.013..17.059 rows=8348 loops=1)
+              ->  Seq Scan on listings  (cost=0.00..4167.23 rows=8494 width=4) (actual time=0.014..25.759 rows=8348 loops=1)
                     Filter: (created_at >= (now() - '30 days'::interval))
                     Rows Removed by Filter: 91652
                     Buffers: shared hit=2396
 Planning:
   Buffers: shared hit=84
-Planning Time: 0.366 ms
-Execution Time: 18.807 ms
+Planning Time: 0.455 ms
+Execution Time: 27.918 ms

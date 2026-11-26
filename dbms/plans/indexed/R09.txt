@@ -1,29 +1,29 @@
 -- [R09] Ten most favourited active listings
--- median execution: 148.813 ms
+-- runs (ms): 127.625 / 130.867 / 132.412  average: 130.301 ms
 
-Limit  (cost=9826.02..9826.05 rows=10 width=37) (actual time=142.951..142.957 rows=10 loops=1)
+Limit  (cost=9808.14..9808.16 rows=10 width=37) (actual time=131.285..131.290 rows=10 loops=1)
   Buffers: shared hit=3321
-  ->  Sort  (cost=9826.02..9974.04 rows=59207 width=37) (actual time=142.950..142.954 rows=10 loops=1)
+  ->  Sort  (cost=9808.14..9955.30 rows=58867 width=37) (actual time=131.283..131.287 rows=10 loops=1)
         Sort Key: (count(*)) DESC, l.listing_id
         Sort Method: top-N heapsort  Memory: 26kB
         Buffers: shared hit=3321
-        ->  HashAggregate  (cost=7954.51..8546.58 rows=59207 width=37) (actual time=125.404..132.700 rows=48196 loops=1)
+        ->  HashAggregate  (cost=7947.37..8536.04 rows=58867 width=37) (actual time=114.627..121.366 rows=48196 loops=1)
               Group Key: l.listing_id
               Batches: 1  Memory Usage: 6161kB
               Buffers: shared hit=3315
-              ->  Hash Join  (cost=4386.09..7451.27 rows=100648 width=29) (actual time=24.330..87.610 rows=100475 loops=1)
+              ->  Hash Join  (cost=4381.84..7447.02 rows=100070 width=29) (actual time=29.461..82.631 rows=100475 loops=1)
                     Hash Cond: (f.listing_id = l.listing_id)
                     Buffers: shared hit=3315
-                    ->  Seq Scan on favorites f  (cost=0.00..2618.93 rows=169993 width=4) (actual time=0.006..13.869 rows=169993 loops=1)
+                    ->  Seq Scan on favorites f  (cost=0.00..2618.93 rows=169993 width=4) (actual time=0.006..13.140 rows=169993 loops=1)
                           Buffers: shared hit=919
-                    ->  Hash  (cost=3646.00..3646.00 rows=59207 width=29) (actual time=24.089..24.090 rows=59279 loops=1)
+                    ->  Hash  (cost=3646.00..3646.00 rows=58867 width=29) (actual time=29.203..29.204 rows=59279 loops=1)
                           Buckets: 65536  Batches: 1  Memory Usage: 4101kB
                           Buffers: shared hit=2396
-                          ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=59207 width=29) (actual time=0.012..11.949 rows=59279 loops=1)
+                          ->  Seq Scan on listings l  (cost=0.00..3646.00 rows=58867 width=29) (actual time=0.007..15.732 rows=59279 loops=1)
                                 Filter: ((status)::text = 'active'::text)
                                 Rows Removed by Filter: 40721
                                 Buffers: shared hit=2396
 Planning:
-  Buffers: shared hit=303
-Planning Time: 0.774 ms
-Execution Time: 143.986 ms
+  Buffers: shared hit=300
+Planning Time: 0.776 ms
+Execution Time: 132.412 ms

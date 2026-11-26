@@ -1,23 +1,24 @@
--- [R10] One user's favourites with first image (JOIN + subquery)
--- median execution: 0.318 ms
+-- [R10] One user's favourites with first image (JOIN + LEFT JOIN)
+-- runs (ms): 0.308 / 0.334 / 0.305  average: 0.316 ms
 
-Sort  (cost=174.62..174.64 rows=9 width=559) (actual time=0.229..0.231 rows=11 loops=1)
+Sort  (cost=103.97..103.99 rows=9 width=78) (actual time=0.248..0.249 rows=11 loops=1)
   Sort Key: f.created_at DESC
   Sort Method: quicksort  Memory: 26kB
-  Buffers: shared hit=98
-  ->  Nested Loop  (cost=0.84..174.48 rows=9 width=559) (actual time=0.058..0.209 rows=11 loops=1)
-        Buffers: shared hit=95
-        ->  Index Scan using favorites_pkey on favorites f  (cost=0.42..22.58 rows=9 width=12) (actual time=0.011..0.013 rows=11 loops=1)
-              Index Cond: (user_id = 42)
-              Buffers: shared hit=4
-        ->  Index Scan using listings_pkey on listings l  (cost=0.42..8.44 rows=1 width=35) (actual time=0.007..0.007 rows=1 loops=11)
-              Index Cond: (listing_id = f.listing_id)
-              Buffers: shared hit=44
-        SubPlan 1
-          ->  Index Scan using listing_images_listing_id_position_key on listing_images i  (cost=0.42..8.44 rows=1 width=35) (actual time=0.009..0.009 rows=1 loops=11)
-                Index Cond: ((listing_id = l.listing_id) AND ("position" = 1))
-                Buffers: shared hit=47
+  Buffers: shared hit=100
+  ->  Nested Loop Left Join  (cost=1.26..103.82 rows=9 width=78) (actual time=0.049..0.222 rows=11 loops=1)
+        Buffers: shared hit=97
+        ->  Nested Loop  (cost=0.84..98.49 rows=9 width=43) (actual time=0.028..0.116 rows=11 loops=1)
+              Buffers: shared hit=50
+              ->  Index Scan using favorites_pkey on favorites f  (cost=0.42..22.58 rows=9 width=12) (actual time=0.011..0.013 rows=11 loops=1)
+                    Index Cond: (user_id = 42)
+                    Buffers: shared hit=4
+              ->  Index Scan using listings_pkey on listings l  (cost=0.42..8.44 rows=1 width=35) (actual time=0.008..0.008 rows=1 loops=11)
+                    Index Cond: (listing_id = f.listing_id)
+                    Buffers: shared hit=45
+        ->  Index Scan using listing_images_listing_id_position_key on listing_images i  (cost=0.42..0.59 rows=1 width=39) (actual time=0.009..0.009 rows=1 loops=11)
+              Index Cond: ((listing_id = l.listing_id) AND ("position" = 1))
+              Buffers: shared hit=47
 Planning:
-  Buffers: shared hit=387
-Planning Time: 0.855 ms
-Execution Time: 0.291 ms
+  Buffers: shared hit=414
+Planning Time: 0.971 ms
+Execution Time: 0.305 ms
